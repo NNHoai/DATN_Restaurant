@@ -1,0 +1,27 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+<!-- categories -->
+{% block search %}
+    <div class="search_view">
+        <div class="header_categories"><h4>{{category.name}}</h4> </div>
+        <div class="row" style="min-height: 600px;">
+            {% for product in products %}
+                <div class="col-lg-3">
+                    <img class="thumbnail" src="{{product.image.url}}">
+                    <div class="box-element product">
+                        <div class="detail_product">
+                            <h6 class="name_product"><strong>{{product.name}}</strong></h6>
+                            <h6 class="price" ><strong>{{product.price}} VND</strong></h6>
+                        </div>
+                        <hr>
+
+                        <button class="btn btn-outline-secondary add-btn update-cart" data-product="{{product.id}}" data-action="add">Thêm vào giỏ hàng</button>
+                        <a class="btn btn-outline-success" href="#">Xem</a>
+                        
+                    </div>
+                </div>    
+            {% endfor %}
+        </div> 
+    </div>
+{% endblock %} 

@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    
+    <!-- css -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="{% static 'app/css/main4.css' %}" rel="stylesheet" />
+
+</head>
+<body>
+    <!-- Head -->
+
+    <!-- Menu -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">
+          <img src="{% static 'app/images/logo.jpg' %}" height="70" width="70"/>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Trang chủ </a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Thực đơn
+              </a>
+              <ul class="dropdown-menu ">
+                {% for category in categories %}
+                <li><a class="dropdown-item" href="{% url 'categories' %}?categoryid={{category.id}}">{{category.name}}</a></li>
+                {% endfor %}
+                <!-- <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Tất cả các món</a></li> -->
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled">Giới thiệu </a>
+            </li>
+          </ul>
+          <img class="logo_name" src="{% static 'app/images/logo1.jpg' %}" />
+          <form class="d-flex" role="search" method="POST" action="{% url 'search' %}">
+            {% csrf_token %}
+            <input class="form-control me-2" type="search" placeholder="Tìm kiếm" name="searchkey" aria-label="search">
+            <button class="btn btn-outline-success" style="background: aliceblue;" type="submit">Tìm kiếm</button>
+          </form>
+          <ul class="navbar-nav mb-2 mb-lg-0">
+            <li class="nav-item dropdown">
+              {% if  usercheck == True %}
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fa-solid fa-user"></i>
+                </a>
+                <ul class="dropdown-menu" style="--bs-dropdown-min-width: 5rem;">
+                  <li><a class="dropdown-item" href="#">{{request.user}}</a></li>
+                  <li><a class="dropdown-item" href="#">Thông tin</a></li>
+                  <li><a class="dropdown-item" href="{% url 'logout'%}">Đăng xuất</a></li>
+                </ul>
+              {% else %}
+                <a class="nav-link dropdown-toggle" href="{% url 'login' %}" role="button" >
+                  <i class="fa-solid fa-user"></i>
+                </a>
+              {% endif %}
+              
+            </li>
+          </ul>
+          
+        </div>
+        <div class="form-inline my-2 my-lg-0">
+          <p id="cart-total">{{order.get_cart_items}}</p>
+          <a href="{% url 'cart' %}"><img id="cart-icon" src="{% static 'app/images/cart.png' %}"></a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main body -->
+    {% block login %}{% endblock %}
+    {% block register %}{% endblock %}
+    {% block banner-slider %}{% endblock %}
+    {% block main-content %}{% endblock %}
+    {% block search %}{% endblock %}
+    {% block cart_content %}{% endblock %}
+    {% block content_checkout %}{% endblock %}
+    <!-- Footer -->
+    <footer class=" ">
+      <div class="footer">
+        <div class="col">
+          <h4>Opening Hours</h4>
+          <ul>
+            <li>Weekdays: 8:00 - 20:00</li>
+            <li>Weekends: 8:00 - 18:00</li>
+            <li>© 2023 Royal Restaurant. All Rights Reserved. Design by Five
+              Thungs</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h4>Address</h4>
+          <ul>
+            <li><i class="fa-solid fa-location-dot"></i> 137 - Hùng Vương, Ngũ Hành Sơn, Đà Nẵng</li>
+            <li><i class="fa-solid fa-phone-volume"></i> Call Us: +84 (09) 987–5874</li>
+            <li><i class="fa-solid fa-envelope"></i> Mail: royalrestaurant137@gmail.com</li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    <!-- js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
+    <script src="{%static 'app/js/app.js' %}" ></script>
+    <script type="text/javascript">
+        var user = '{{request.user}}'
+        function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  // Does this cookie string begin with the name we want?
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+      const csrftoken = getCookie('csrftoken');
+    </script>
+</body>
+</html>
