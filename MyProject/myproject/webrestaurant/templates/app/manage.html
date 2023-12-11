@@ -1,0 +1,21 @@
+{% extends 'app/base_manage.html' %} {% load static %} {% block model_menu %}
+<div class="row_manage">
+  <div class="model_menu">
+    <a href="#" onclick="load_menu()"><i class="fa-solid fa-table"></i>Thực đơn</a>
+    <a href="#" onclick="load_table()"><i class="fa-solid fa-door-open"></i>Bàn/Phòng</a>
+    <a href="#" onclick="load_staff()"><i class="fa-solid fa-clipboard-user"></i>Nhân viên</a>
+    <a href="#" onclick="load_customer()"><i class="fa-solid fa-users"></i>Khách hàng</a>
+    <button class="dropdown-btn">
+      <i class="fa-solid fa-square-poll-vertical"></i>Thống kê
+      <i class="fa fa-caret-down" style="width: auto; padding-top: 5px"></i>
+    </button>
+    <div class="dropdown-container">
+      <a href="#" onclick="load_day()">Hóa đơn theo ngày</a>
+      <a href="#" onclick="load_month()">Hóa đơn theo tháng</a>
+    </div>
+  </div>
+  <div id="manage_content">
+	
+  </div>
+</div>
+{% endblock model_menu %}

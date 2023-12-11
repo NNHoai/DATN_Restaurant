@@ -93,6 +93,11 @@ h1,h2,h3,h4,h5,h6{
 	width: 100%;
 	margin: auto;
 }
+.row_manage{
+	background: white;
+	display: flex;
+	flex-direction: row;
+}
 .row-image{
 	width: 100px;
 }

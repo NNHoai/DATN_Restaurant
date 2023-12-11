@@ -19,6 +19,7 @@ def loginpage(request):
         user = authenticate(request, username=username1, password=password1)
         
         if user is not None:
+            
             login(request, user)
             return redirect('home')
         else:
@@ -27,6 +28,30 @@ def loginpage(request):
     usercheck = False
     context = {'usercheck' : usercheck, 'message' : message, 'order': order}
     return render(request, 'app/login.html', context)
+def manage(request):
+    message = ''
+    order = {'get_cart_items' : 0}
+    if request.user.is_authenticated:
+        return redirect('home')
+    if request.method == "POST":
+        username1 = request.POST.get('username')
+        password1 = request.POST.get('password')
+        user = authenticate(request, username=username1, password=password1)
+        
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            message = 'Tài khoản hoặc mật khẩu chưa đúng!'
+            
+    usercheck = False
+    context = {'usercheck' : usercheck, 'message' : message, 'order': order}
+    return render(request, 'app/manage.html', context)
+def staff(request):
+    products = Product.objects.all()
+    categories = Category.objects.all()
+    context = {'products' : products, 'categories' : categories}
+    return render(request, 'app/staff.html', context)
 def logoutpage(request):
     logout(request)
     return redirect('login')

@@ -1,0 +1,247 @@
+{% extends 'app/base_manage.html' %} 
+{% load static %} 
+{% block model_menu %}
+<div class="row_manage">
+  <div class="tables">
+    <h3>Thông tin bàn</h3>
+    <div class="tables_info">
+      <button>Tất cả</button>
+      <button style="background: aqua">Trống</button>
+      <button style="background: red">Bận</button>
+    </div>
+    <div class="tables_container">
+      <button class="table">
+        <img src="{% static '/images/table_empty.jpg' %}"/>
+        <p>bàn 1</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 3</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      
+      <button class="table">
+        <img src="{% static '/images/table_empty.jpg' %}"/>
+        <p>bàn 1</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 3</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_empty.jpg' %}"/>
+        <p>bàn 1</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 3</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_empty.jpg' %}"/>
+        <p>bàn 1</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 3</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_empty.jpg' %}"/>
+        <p>bàn 1</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 3</p>
+      </button>
+      <button class="table">
+        <img src="{% static '/images/table_busy.jpg' %}"/>
+        <p>bàn 2</p>
+      </button>
+    </div>
+  </div>
+  <div class="categories">
+    <div class="categories_header">
+      <h3>Thực đơn</h3>
+      <form class="d-flex" role="search" method="POST" action="{% url 'search' %}">
+        {% csrf_token %}
+        <input class="form-control me-2" style="width: 80%;" type="search" placeholder="Tìm kiếm" name="searchkey" aria-label="search">
+        <button class="btn btn-outline-success" style="background: aliceblue;" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </form>
+    </div>
+    <div class="category">
+      {% for category in categories %}
+        <div class="category_detail">
+          <div class="category_name"><p>{{category.name}}</p></div>
+          <div class="products">
+            {% for product in products %}
+              {% if product.Category == category %}
+                <div class="col-lg-3">
+                  <img class="thumbnail" src="{{product.image.url}}">
+                  <div class="box-element product">
+                      <div class="detail_product1">
+                          <h6 class="name_product1"><strong>{{product.name}}</strong></h6>
+                          <h6 class="price1" ><strong>{{product.price}} đ</strong></h6>
+                      </div>
+                      <a class="btn-add" href="#"><i class="fa-solid fa-circle-plus"></i></a>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="total_bill">
+    <div class="header_bill">
+      <h3>Thông tin hóa đơn</h3>
+      <div class="bill_info">
+          <h5>Bàn: 1</h5>
+      </div>
+    </div>
+    <div class="detail_bill">
+      <div class="box-element">
+        <div class="cart-row">
+          <div class="cart-table" style="flex:2"><strong>Món</strong></div>
+          <div class="cart-table" style="flex:1"><strong>Giá</strong></div>
+          <div class="cart-table" style="flex:1"><strong>Số lượng</strong></div>
+          <div class="cart-table" style="flex:1"><strong>Tổng giá</strong></div>
+          <div style="flex:1"></div>
+        </div>
+        <div class="cart-row">
+          <div class="cart-table" style="flex:2"><p>Bia larue smooth</p></div>
+          <div class="cart-table" style="flex:1"><p>14000 đ</p></div>
+          <div class="cart-table" style="flex:1">
+            <p class="quantity">5</p>
+            <div class="quantity">
+              <img class="chg-quantity update-cart" data-product="{{item.product.id}}" data-action="add" src="{% static  'app/images/arrow-up.png' %}">
+          
+              <img class="chg-quantity update-cart" data-product="{{item.product.id}}" data-action="remove" src="{% static  'app/images/arrow-down.png' %}">
+            </div>
+          </div>
+          <div  class="cart-table" style="flex:1"><p>70000 đ</p></div>
+          <div style="flex:1">
+            <a style="color: red;"><i class="fa-solid fa-circle-xmark"></i></a>
+          </div>
+        </div>
+
+        <div class="cart-row">
+          <div class="cart-table" style="flex:2"><p>Lẩu cá thác lác</p></div>
+          <div class="cart-table" style="flex:1"><p>200000 đ</p></div>
+          <div class="cart-table" style="flex:1">
+            <p class="quantity">1</p>
+            <div class="quantity">
+              <img class="chg-quantity update-cart" data-product="{{item.product.id}}" data-action="add" src="{% static  'app/images/arrow-up.png' %}">
+          
+              <img class="chg-quantity update-cart" data-product="{{item.product.id}}" data-action="remove" src="{% static  'app/images/arrow-down.png' %}">
+            </div>
+          </div>
+          <div  class="cart-table" style="flex:1"><p>200000 đ</p></div>
+          <div style="flex:1">
+            <a style="color: red;"><i class="fa-solid fa-circle-xmark"></i></a>
+          </div>
+        </div>
+        
+        <div class="cart-row">
+          <div class="cart-table" style="flex:2"><p>Cá lóc chiên xù</p></div>
+          <div class="cart-table" style="flex:1"><p>140000 đ</p></div>
+          <div class="cart-table" style="flex:1">
+            <p class="quantity">1</p>
+            <div class="quantity">
+              <img class="chg-quantity update-cart" data-product="{{item.product.id}}" data-action="add" src="{% static  'app/images/arrow-up.png' %}">
+          
+              <img class="chg-quantity update-cart" data-product="{{item.product.id}}" data-action="remove" src="{% static  'app/images/arrow-down.png' %}">
+            </div>
+          </div>
+          <div  class="cart-table" style="flex:1"><p>140000 đ</p></div>
+          <div style="flex:1">
+            <a style="color: red;"><i class="fa-solid fa-circle-xmark"></i></a>
+          </div>
+        </div>
+        {% for item in items %}
+        <div class="cart-row">
+          <div class="cart-table" style="flex:2"><p>{{item.product.name}}</p></div>
+          <div class="cart-table" style="flex:1"><p>formatNumber(n){{item.product.price}}</p></div>
+          <div class="cart-table" style="flex:1">
+            <p class="quantity">{{item.quantity}}</p>
+            <div class="quantity">
+              <img class="chg-quantity update-cart" data-product="{{item.product.id}}" data-action="add" src="{% static  'app/images/arrow-up.png' %}">
+          
+              <img class="chg-quantity update-cart" data-product="{{item.product.id}}" data-action="remove" src="{% static  'app/images/arrow-down.png' %}">
+            </div>
+          </div>
+          <div  class="cart-table" style="flex:1"><p>{{item.get_total}} đ</p></div>
+          <div style="flex:1"><img class="row-image" src="{{item.product.image.url}}"></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="total_btn_bill">
+      <div class="total_btn">
+        <h4>Tổng tiền: 410000 đ</h4>
+        <div class="btn_bill">
+          <button class="left">Gộp bàn</button>
+          <button class="right">Chuyển bàn</button>
+        </div>
+      </div>
+      <div class="btn_checkout">
+        <button>Thanh toán</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock model_menu %}

@@ -43,6 +43,7 @@ class Order(models.Model):
     
     def __str__(self):
         return str(self.id)
+    
     @property
     def get_cart_items(self):
         orderitems = self.orderitem_set.all()
@@ -76,3 +77,36 @@ class InfoBooking(models.Model):
     date_booking = models.DateTimeField()
     description = models.TextField(null=True, blank=True)
     status = models.TextField(max_length=100, null=True, blank=True)
+
+class Table(models.Model):
+    name = models.CharField(max_length=100, null=False, unique=True)
+    status = models.CharField(
+        max_length=10,
+        choices=[('empty','Empty'), ('busy', 'Busy')]
+    )
+
+class Bill(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, blank=True, null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_checkout = models.DateTimeField()
+    id_table = models.ForeignKey(Table, on_delete=models.SET_NULL,  blank=True, null=True)
+    total_price = models.DecimalField(max_digits=10, decimal_places=1)
+    status = models.CharField(
+        max_length=10,
+        choices=[('unpaid', 'Unpaid'), ('paid', 'Paid')]
+    )
+    @property
+    def get_bill_total(self):
+        orderitems = self.detailbill_set.all()
+        total = sum([item.get_total for item in orderitems])
+        return total
+
+class DetailBill(models.Model):
+    bill = models.ForeignKey(Bill, on_delete=models.SET_NULL,  blank=True, null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, blank=True, null=True)
+    quantity = models.IntegerField(default=0, null=True, blank=True)
+
+    @property
+    def get_total(self):
+        total = self.product.price * self.quantity
+        return total
