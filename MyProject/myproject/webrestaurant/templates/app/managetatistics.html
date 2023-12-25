@@ -1,0 +1,170 @@
+{% extends 'app/manage.html' %} 
+{% load static %} 
+{% load humanize %} 
+{% block content %}
+<div class="manage_content">
+  <div class="view_chart" style="display: flex">
+    <canvas id="myChart" style="max-width: 70%; height: 500px;"></canvas>
+    <div class="right_chart" style="max-width: 30%; float: right">
+      <canvas id="myChart1"style="height: 185px; width: 340px;"></canvas>
+      <div class="text_price" style="padding-left: 1rem;">
+        <h4>{{text_max}}</h4>
+        <h4>{{text_min}}</h4>
+      </div>
+    </div>
+    
+  </div>
+  <div class="total_price_year" style="padding: 1rem; background: #153f53; font-size: 2rem; color: aliceblue;">
+    {{text_total}}
+  </div>
+</div>
+
+{% endblock %} 
+{% block scripts %}
+<!--Chart js-->
+<script>
+  var ctx = document.getElementById("myChart").getContext("2d");
+  var ctx1 = document.getElementById("myChart1").getContext("2d");
+  var data = [{% for price in data %} {{ price|stringformat:"s" }},{%endfor%}] ;
+  var data1 = [{% for price in data1 %} {{ price|stringformat:"s" }},{%endfor%}] ;
+  var labels = [{% for label in label_data %} '{{label|stringformat:"s" }}',{%endfor%}]
+  var data_chart = {
+      labels: labels,
+      datasets: [{
+          label: "Doanh thu theo VNĐ",
+          data: data,
+          backgroundColor: [
+            "rgba(255, 99, 132, 2)",
+            "rgba(54, 162, 235, 2)",
+            "rgba(255, 206, 86, 2)",
+            "rgba(75, 192, 192, 2)",
+            "rgba(153, 102, 255, 2)",
+            "rgba(255, 159, 64, 2)",
+            "rgba(210, 110, 153, 2)",
+            "rgba(57, 162, 110, 2)",
+            "rgba(230, 110, 86, 2)",
+            "rgba(70, 192, 110, 2)",
+            "rgba(253, 110, 153, 2)",
+            "rgba(123, 153, 110, 2)",
+          ],
+          // borderColor: [
+          //   "rgba(255,99,132,1)",
+          //   "rgba(54, 162, 235, 1)",
+          //   "rgba(255, 206, 86, 1)",
+          //   "rgba(75, 192, 192, 1)",
+          //   "rgba(153, 102, 255, 1)",
+          //   "rgba(255, 159, 64, 1)",
+          //   "rgba(255,99,132,1)",
+          //   "rgba(54, 162, 235, 1)",
+          //   "rgba(255, 206, 86, 1)",
+          //   "rgba(75, 192, 192, 1)",
+          //   "rgba(153, 102, 255, 1)",
+          //   "rgba(255, 159, 64, 1)",
+          // ],
+          // borderWidth: 1,
+        },
+      ],
+    };
+    var data_chart1 = {
+      labels: ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12",],
+      datasets: [{
+          label: "Doanh thu theo VNĐ",
+          data: data1,
+          backgroundColor: [
+            "rgba(255, 99, 132, 2)",
+            "rgba(54, 162, 235, 2)",
+            "rgba(255, 206, 86, 2)",
+            "rgba(75, 192, 192, 2)",
+            "rgba(153, 102, 255, 2)",
+            "rgba(255, 159, 64, 2)",
+            "rgba(210, 110, 153, 2)",
+            "rgba(57, 162, 110, 2)",
+            "rgba(230, 110, 86, 2)",
+            "rgba(70, 192, 110, 2)",
+            "rgba(253, 110, 153, 2)",
+            "rgba(123, 153, 110, 2)",
+          ],
+        },
+      ],
+    };
+    var tooltips = {
+      callbacks: {
+                label: function(tooltipItem, data) {
+                  var dataLabel = data.labels[tooltipItem.index];
+                  var value = ': ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toLocaleString()+ 'đ';
+                  if (Chart.helpers.isArray(dataLabel)) {
+                    dataLabel = dataLabel.slice();
+                    dataLabel[0] += value;
+                  } else {
+                    dataLabel += value;
+                  }
+                  return dataLabel;
+                }
+            }
+      }
+      var tooltips1 = {
+      callbacks: {
+                label: function(tooltipItem, data) {
+                  var dataLabel = data.labels[tooltipItem.index];
+                  var value = ': ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toLocaleString()+ '%';
+                  if (Chart.helpers.isArray(dataLabel)) {
+                    dataLabel = dataLabel.slice();
+                    dataLabel[0] += value;
+                  } else {
+                    dataLabel += value;
+                  }
+                  return dataLabel;
+                }
+            }
+      }
+  var options = {
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+              // scaleLabel: function(label) {
+              //   return value.toLocaleString("vi",{style:"currency", currency:"VND"});},
+              userCallback: function(value, index, values) {
+                // Convert the number to a string and splite the string every 3 charaters from the end
+                value = value.toString();
+                value = value.split(/(?=(?:...)*$)/);
+                // Convert the array to a string and format the output
+                value = value.join('.');
+                return value +'đ';
+               }
+            },
+          },
+        ],
+      },
+      tooltips: tooltips,
+    };
+    var options1 = {
+            responsive: true,
+            maintainAspectRatio: true,
+            legend: {
+                display: false
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            },
+            tooltips: tooltips1,
+            title: {
+              display: true,
+              text: 'Doanh thu theo %'
+          },
+        };
+
+  var myChart = new Chart(ctx,{
+    type: 'bar',
+    data: data_chart,
+    options: options,
+  });
+  var myChart1 = new Chart(ctx1,{
+    type: 'pie',
+    data: data_chart1,
+    options: options1,
+  });
+</script>
+{% endblock %}

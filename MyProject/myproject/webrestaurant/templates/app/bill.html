@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Hóa đơn</title>
+    <link rel="stylesheet" href="{% static 'app/css/bill.css' %}" media="all" />
+  </head>
+  <body>
+    <header class="clearfix">
+      <h1 style="width: 17cm">Thông tin hóa đơn</h1>
+      <div id="company" class="clearfix">
+        <div><span>Nhà hàng</span> Hương Quê</div>
+        <div><span>Địa chỉ</span> 137 - Hùng Vương, Ngũ Hành Sơn, Đà Nẵng</div>
+        <div><span>Email</span> <a href="mailto:royalrestaurant137@gmail.com">royalrestaurant137@gmail.com</a></div>
+      </div>
+      <div id="project">
+        <div><span>Bàn</span>{% if bill.id_table.count == 1 %}
+                                {{bill.id_table.first.id}}
+                              {% else %}
+                                {% for table in bill.id_table.all %} 
+                                  {% if table == bill.id_table.last %}
+                                    {{table.id}}
+                                  {% else %}
+                                    {{table.id}},
+                                  {% endif %}
+                                {% endfor %}
+                              {% endif %}
+        </div>
+        <div><span>Nhân viên</span> Hoàng Nam</div>
+        <div><span>Giờ vào</span> {{bill.date_created |date:'Y-m-d H:i' }}</div>
+        <div><span>Giờ ra</span> {{bill.date_checkout |date:'Y-m-d H:i' }}</div>
+      </div>
+    </header>
+    <main>
+      <table>
+        <thead>
+          <tr>
+            <th class="service">Tên món</th>
+            <th>Đơn giá</th>
+            <th>Số lượng</th>
+            <th>Tổng giá</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for detail in detailbill %}
+          <tr>
+            <td class="service">{{detail.product.name}}</td>
+            <td class="unit">{{detail.product.price|floatformat:0}} đ</td>
+            <td class="qty">{{detail.quantity}}</td>
+            <td class="total">{{detail.get_total|floatformat:0}} đ</td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td colspan="3" class="grand total">Tổng tiền</td>
+            <td class="grand total">{{bill.get_bill_total|floatformat:0}} đ</td>
+          </tr>
+          <tr>
+            <td class="word total">Bằng chữ</td>
+            <td colspan="3" class="word total">{{ bill_total_word}} đồng</td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- <div id="notices">
+        <div>NOTICE:</div>
+        <div class="notice">A finance charge of 1.5% will be made on unpaid balances after 30 days.</div>
+      </div> -->
+    </main>
+    <footer>
+      Chúc quý khách một ngày vui vẻ. 
+      Hẹn gặp lại quý khách!
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,37 @@
+{% extends 'app/manage.html' %} 
+{% load static %} 
+{% block content %}
+<div class="manage_content" style="overflow: hidden;">
+  
+  <div class="btn_action_add">
+    <a id="add_category" class="" href="{% url 'addcategory' %}">Thêm thực đơn</a>
+  </div>
+  <div class="table_categorys">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col" style="width: 5%">ID</th>
+          <th scope="col">Tên thực đơn</th>
+          <th scope="col" style="width: 20%">Trạng thái</th>
+          <th scope="col" style="width: 10%"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for category in categories %}
+          <tr style=" height: 80px;">
+            <th scope="row">{{category.id}}</th>
+            <td>{{ category.name}}</td>
+            <td>{{ category.active}}</td>
+            <td>
+              <a style="color: blue;" href="{% url 'updatecategory' category.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
+              <a style="color: red;" href="{% url 'deletecategory' category.id %}"><i class="fa-solid fa-delete-left"></i></a>
+            </td>
+          </tr>
+        {% endfor %}  
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+

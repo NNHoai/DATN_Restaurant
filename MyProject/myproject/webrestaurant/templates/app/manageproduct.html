@@ -1,0 +1,18 @@
+{% extends 'app/manage.html' %} 
+{% load static %} 
+{% block content %}
+<div class="manage_content" style="overflow: hidden;">
+  <div class="list_category">
+    {% for category in categories %}
+      <button class="btn_category" id="{{ category.id}}">{{ category.name}}</button>
+    {% endfor %}
+  </div>
+  <div class="btn_action_add">
+    <a id="add_category" class="" href="{% url 'addcategory' %}">Thêm thực đơn</a>
+    <a id="add_product" class="" href="{% url 'addproduct' %}" style="float: right;">Thêm món ăn</a>
+  </div>
+  <div class="list_products">
+    {% include "app/listproduct.html" %}
+  </div>
+</div>
+{% endblock %}

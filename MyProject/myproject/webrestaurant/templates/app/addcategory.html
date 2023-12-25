@@ -1,0 +1,32 @@
+{% extends 'app/manage.html' %} {% load static %}
+
+<!-- register -->
+{% block content %}
+<div class="form_content">
+  <h2>Thêm thực đơn</h2>
+  <div class="input_form">
+    <form method="POST" action="" enctype="multipart/form-data" style="width: 53%;">
+      {% csrf_token %}
+
+      <div class="form-outline ">
+        <div class="row_input"  style="padding: 1rem;">
+          <label class="form-label label-text" for="form3Example1cg">Tên thực đơn</label>
+          <div class="input_dj text-field">{{form.name}}</div>
+        </div>
+        <div class="row_input"  style="padding: 1rem; display: flex;">
+          <label class="form-label" for="form3Example4cg">Trạng thái</label>
+          <div class="input_dj" style="float: none; padding-left: 6rem;">{{form.active}}</div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-center">
+        <button
+          type="submit"
+          class="btn btn-success btn-block btn-lg gradient-custom-4 text-body"
+        >
+          Thêm thực đơn
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

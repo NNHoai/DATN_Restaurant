@@ -1,82 +1,7 @@
 
-//add cart
-var updatebtns = document.getElementsByClassName('update-cart');
-
-for (i = 0; i < updatebtns.length; i++) {
-    updatebtns[i].addEventListener('click', function () {
-        var productid = this.dataset.product
-        var action = this.dataset.action
-        if (user === "AnonymousUser") {
-            console.log('Bạn chưa đăng nhập')
-        }
-        else {
-            updateUserOrder(productid, action)
-        }
-    })
-}
-
-function updateUserOrder(productid, action) {
-    var url = '/update_item/'
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken
-        },
-        body: JSON.stringify({ 'productid': productid, 'action': action })
-    })
-        .then((response) => {
-            return response.json()
-        })
-        .then((data) => {
-            console.log('data', data)
-            location.reload()
-        })
-}
-
-
-function change_image(image) {
-    var container = document.getElementById("main-image");
-    container.src = image.src;
-}
-
 document.addEventListener("DOMContentLoaded", function (event) {
 });
 
-
-function load_menu() {
-    document.getElementById("manage_content").innerHTML = "{% include 'app/login.html' %}";
-}
-function load_table() {
-    document.getElementById("manage_content").innerHTML = '<object type="type/html" data="login.html" ></object>';
-}
-function load_staff() {
-    document.getElementById("manage_content").innerHTML = '<object type="type/html" data="home.html" ></object>';
-}
-function load_customer() {
-    document.getElementById("manage_content").innerHTML = '<object type="type/html" data="home.html" ></object>';
-}
-function load_day() {
-    document.getElementById("manage_content").innerHTML = '<object type="type/html" data="home.html" ></object>';
-}
-function load_month() {
-    document.getElementById("manage_content").innerHTML = '<object type="type/html" data="home.html" ></object>';
-}
-// menu_manage
-var dropdown = document.getElementsByClassName("dropdown-btn");
-var i;
-
-for (i = 0; i < dropdown.length; i++) {
-    dropdown[i].addEventListener("click", function () {
-        this.classList.toggle("active_menu");
-        var dropdownContent = this.nextElementSibling;
-        if (dropdownContent.style.display === "block") {
-            dropdownContent.style.display = "none";
-        } else {
-            dropdownContent.style.display = "block";
-        }
-    });
-}
 
 
 // //choose table
@@ -215,6 +140,9 @@ btn_act.addEventListener('click', function () {
     else if((action == 'change')){
         table2 = document.getElementById('table_change').value;
     }
+    else if((action == 'checkout')){
+        table2 = "";
+    }
         
     if (user === "AnonymousUser") {
         console.log('Bạn chưa đăng nhập')
@@ -271,12 +199,6 @@ btn_merge_table.addEventListener('click', function () {
     // modal.style.display = "none";
     // });
 
-    // // When the user clicks anywhere outside of the modal, close it
-    // window.onclick = function(event) {
-    // if (event.target == modal) {
-    //     modal.style.display = "none";
-    // }
-    // }
 
     var div_model_body = document.getElementById('modal-body');
     div_model_body.innerHTML = "";
@@ -352,7 +274,7 @@ btn_change_table.addEventListener('click', function () {
 
 function updateTable(table1, table2, action) {
 
-    var url = '/update_table/'
+    var url = '/update_table_bill/'
     fetch(url, {
         method: 'POST', 
         headers: {
@@ -362,14 +284,32 @@ function updateTable(table1, table2, action) {
         body: JSON.stringify({ 'table1': table1, 'table2': table2, 'action': action })
     })
         .then((response) => {
-            return response.json()
+            return response.json();
         })
         .then((data) => {
-            console.log('data', data)
-            location.reload()
+            console.log('data', data);
+            createPDF('total_bill');
+            location.reload();
         })
 };
 
+var btn_checkout = document.getElementById('btn_checkout');
 
+btn_checkout.addEventListener('click', function () {
+    var table = this.dataset.table;
+    var action = this.dataset.action;
 
+    var div_model_body = document.getElementById('modal-body');
 
+    div_model_body.innerHTML = "";
+
+    const element = document.createElement("p");
+    element.innerText = 'Bạn muốn thanh toán bàn ' + table + ' ?';
+
+    div_model_body.append(element);
+
+    modal.style.display = "block";
+
+    btn_act.dataset.action = action;
+
+})

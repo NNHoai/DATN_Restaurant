@@ -1,0 +1,40 @@
+{% for category in categories %}
+  <div class="list_product" id="{{category.id}}">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col" style="width: 3%">ID</th>
+          <th scope="col">Tên món</th>
+          <th scope="col" style="width: 8%">Giá</th>
+          <th scope="col" style="width: 20%; height: 50px;">Mô tả</th>
+          <th scope="col" style="width: 10%">Trạng thái</th>
+          <th scope="col">Tên thực đơn</th>
+          <th scope="col">Ảnh</th>
+          <th scope="col">Ngày thêm</th>
+          <th scope="col" style="width: 5%"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+          {% if product.Category == category %}
+            <tr style=" height: 80px;">
+              <th scope="row">{{product.id}}</th>
+              <td>{{ product.name}}</td>
+              <td>{{ product.price|floatformat:0}} đ</td>
+              <td style="overflow-y: auto; white-space: nowrap;">{{ product.description }}</td>
+              <td>{{ product.active}}</td>
+              <td>{{ product.Category}}</td>
+              <td><img src="{{ product.image.url }}"></td>
+              <td>{{ product.date_added|date:'Y-m-d H:i'}}</td>
+              <td>
+                <a style="color: blue;" href="{% url 'updateproduct' product.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
+                <a style="color: red;" href="{% url 'deleteproduct' product.id %}"><i class="fa-solid fa-delete-left"></i></a>
+              </td>
+            </tr>
+            {% endif %}
+          {% endfor %}      
+      </tbody>
+    </table>
+  </div>   
+{% endfor %}                          
+

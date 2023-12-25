@@ -1,0 +1,61 @@
+{% extends 'app/manage.html' %} {% load static %}
+
+<!-- register -->
+{% block content %}
+<div class="form_content">
+  <h2>Cập nhật món ăn</h2>
+  <div class="input_form">
+    <!-- <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="submit">
+        </form> -->
+    <form method="POST" action="" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-outline many_input">
+        <div class="row_left">
+          <div class="row_input">
+            <label class="form-label label-text" for="form3Example1cg">Tên món</label>
+            <div class="input_dj text-field">{{form.name}}</div>
+          </div>
+          <div class="row_input">
+            <label class="form-label label-text" for="form3Example1cg">Giá tiền</label>
+            <div class="input_dj text-field">{{form.price}}</div>
+          </div>
+          <div class="row_input">
+            <div class="input_left">
+              <label class="form-label" for="form3Example4cg">Trạng thái</label>
+              <div class="input_dj">{{form.active}}</div>
+            </div>
+            <div class="input_right">
+              <label class="form-label" for="form3Example4cdg">Thực đơn</label>
+              <div class="input_dj choose-field">{{form.Category}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="row_right">
+          <img src="#" id="imgproduct" align="right" />
+        </div>
+      </div>
+      <div class="form-outline mb-4">
+        <label class="form-label" for="form3Example4cdg">Hình ảnh</label>
+        <div class="input_dj input-image">{{form.image}}</div>
+      </div>
+      <div class="form-outline mb-4" style="height: 8rem">
+        <label class="form-label" for="form3Example3cg">Mô tả</label>
+        <div class="input_dj">{{form.description}}</div>
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <button
+          type="submit"
+          class="btn btn-success btn-block btn-lg gradient-custom-4 text-body"
+        >
+          Cập nhật thông tin
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

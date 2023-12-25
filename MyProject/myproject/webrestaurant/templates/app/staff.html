@@ -92,11 +92,23 @@
       {% endfor %}
     </div>
   </div>
-  <div class="total_bill">
+  <div class="total_bill" id="total_bill">
     <div class="header_bill">
       <h3>Thông tin hóa đơn</h3>
       <div class="bill_info">
-          <h5>Bàn: {{bill.id_table}}</h5>
+        {% if bill.id_table.count == 1 %}
+          <h5>Bàn: {{bill.id_table.first.id}}</h5>
+        {% else %}
+          <h5>Bàn:{% for table in bill.id_table.all %} 
+                    {% if table == bill.id_table.last %}
+                      {{table.id}}
+                    {% else %}
+                      {{table.id}},
+                    {% endif %}
+                  {% endfor %}
+          </h5>
+        {% endif %}
+        
       </div>
     </div>
     <div class="detail_bill">
@@ -134,18 +146,22 @@
         <div class="btn_bill" id="btn_bill">
           
           <div class="merge_table">
-            <button class="left update_table" id="merge_table" data-table="{{bill.id_table}}" data-action="merge">Gộp bàn</button>
+            <button class="left update_table" id="merge_table" data-table="{{table.id}}" data-action="merge">Gộp bàn</button>
             <select name="table_merge" id="table_merge">
               {% for table in tables %}
-                {% if table.id != bill.id_table.id %} 
+                {% if table not in bill.id_table.all %} 
                   <option value="{{table.id}}">{{table.name}}</option>
                 {% endif %}
               {% endfor %}
             </select>
           </div>
           <div class="change_table">
-            <button class="left update_table" id="change_table" data-table="{{bill.id_table}}" data-action="change">Chuyển bàn</button>
-            <select name="table_change" id="table_change">
+            {% if table.status == 'empty' %}
+              <button class="left update_table" id="change_table" data-table="{{table.id}}" data-action="change" disabled>Chuyển bàn</button>
+            {% else %}
+              <button class="left update_table" id="change_table" data-table="{{table.id}}" data-action="change">Chuyển bàn</button>
+            {% endif %}
+              <select name="table_change" id="table_change">
               {% for table in tables %}
                 {% if table.status == 'empty' and table.id != bill.id_table.id %} 
                   <option value="{{table.id}}">{{table.name}}</option>
@@ -156,12 +172,12 @@
         </div>
       </div>
       <div class="btn_checkout">
-        <button>Thanh toán</button>
+        <button id="btn_checkout" data-table="{{table.id}}" data-action="checkout" {% if table.status == 'empty' %} disabled {% endif %}>Thanh toán</button>
       </div>
     </div>
   </div>
 </div>
-<!-- The Modal -->
+<!-- The Modal Update Table-->
 <div id="myModal" class="modal">
 
   <!-- Modal content -->
@@ -174,10 +190,91 @@
       
     </div>
     <div class="modal-footer">
-      <button class="btn_act" id="btn_act" data-table="{{bill.id_table}}">Thực hiên</button>
+      <button class="btn_act" id="btn_act" data-table="{{table.id}}">Thực hiên</button>
       <button class="cancel" id="cancel">Hủy</button>
     </div>
   </div>
-
 </div>
+
 {% endblock model_menu %}
+{% block script %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script type="text/javascript" src="//cdn.rawgit.com/niklasvh/html2canvas/0.5.0-alpha2/dist/html2canvas.min.js"></script> 
+  <script src="{%static 'app/js/staff3.js' %}" ></script>
+  <script>
+    var  
+    form = $('.detail_bill'), 
+    cache_width = form.width(), 
+    a4  =[ 595.28,  841.89];  // for a4 size pap
+    //create pdf 
+    function createPDF(id){ 
+    const  content =  '<!DOCTYPE html><html lang="en"> <head>'
+                      +'<meta charset="utf-8"><title>Hóa đơn</title>'
+                      +'<link rel="stylesheet" href="'+'{% static "app/css/bill.css" %}'+'" media="all" />'
+                      +'</head><body>'
+                      +'<header class="clearfix">'
+                      +'<h1 style="width: 17cm">Thông tin hóa đơn</h1>'
+                      +'<div id="company" class="clearfix">'
+                      +'<div><span>Nhà hàng</span> Hương Quê</div>'
+                      +'<div><span>Địa chỉ</span> 137 - Hùng Vương, Ngũ Hành Sơn, Đà Nẵng</div>'
+                      +'<div><span>Email</span> <a href="mailto:royalrestaurant137@gmail.com">royalrestaurant137@gmail.com</a></div>'
+                      +'</div>'
+                      +'<div id="project">'
+                      +'<div><span>Bàn</span>{% if bill.id_table.count == 1 %}'
+                      +'{{bill.id_table.first.id}}'
+                      +'{% else %}'
+                      +'{% for table in bill.id_table.all %} '
+                      +'{% if table == bill.id_table.last %}'
+                      +'{{table.id}}'
+                      +'{% else %}'
+                      +'{{table.id}},'
+                      +'{% endif %}'
+                      +'{% endfor %}'
+                      +'{% endif %}'
+                      +'</div>'
+                      +'<div><span>Nhân viên</span> Hoàng Nam</div>'
+                      +'<div><span>Giờ vào</span> {{bill.date_created}}</div>'
+                      +'<div><span>Giờ ra</span> {{datetime.now}}</div>'
+                      +'</div>'
+                      +'</header>'
+                      +'<main>'
+                      +'<table>'
+                      +'<thead>'
+                      +'<tr>'
+                      +'<th class="service">Tên món</th>'+'<th>Đơn giá</th>'+'<th>Số lượng</th>'+'<th>Tổng giá</th>'+'</tr>'+'</thead>'
+                      +'<tbody>'
+                      +'{% for detail in detailbill %}'
+                      +'<tr>'
+                      +'<td class="service">{{detail.product.name}}</td>'
+                      +'<td class="unit">{{detail.product.price|floatformat:0}} đ</td>'
+                      +'<td class="qty">{{detail.quantity}}</td>'
+                      +'<td class="total">{{detail.get_total|floatformat:0}} đ</td>'
+                      +'</tr>'
+                      +'{% endfor %}'
+                      +'<tr>'
+                      +'<td colspan="3" class="grand total">Tổng tiền</td>'
+                      +'<td class="grand total">{{bill.get_bill_total|floatformat:0}} đ</td>'
+                      +'</tr>'
+                      +'<tr>'
+                      +'<td class="word total">Bằng chữ</td>'
+                      +'<td colspan="3" class="word total">{{ bill_total_word }} đồng</td>'
+                      +'</tr>'
+                      +'</tbody>'
+                      +'</table>'
+                      +'<!-- <div id="notices">'
+                      +'<div>NOTICE:</div>'
+                      +'<div class="notice">A finance charge of 1.5% will be made on unpaid balances after 30 days.</div>'
+                      +'</div> -->'
+                      +'</main>'
+                      +'<footer>'
+                      +'Chúc quý khách một ngày vui vẻ. Hẹn gặp lại quý khách!'
+                      +'</footer>'
+                      +'</body>'
+                      +'</html>';
+      const printWindow = window.open('{% url "bill" bill.id %}', '_blank');
+      // printWindow.document.write(content);
+      // printWindow.document.close();
+      printWindow.print();
+    } 
+  </script>
+{% endblock %}
