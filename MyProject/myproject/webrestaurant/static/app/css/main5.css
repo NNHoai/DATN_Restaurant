@@ -276,6 +276,23 @@ h6 {
 .form_content .text-field{
   width: 20rem;
 }
+.text-field input[type="password"]{
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  background-clip: padding-box;
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: var(--bs-border-radius);
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
 .row_manage .manage_content {
   background: white;
   height: 630px;
@@ -630,6 +647,7 @@ table td{
 }
 .row-image {
   width: 100px;
+  height: 60px;
 }
 .form-field {
   width: 340px;

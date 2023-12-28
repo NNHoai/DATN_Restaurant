@@ -14,7 +14,7 @@
 					<th><h5>Số lượng: <strong>{{order.get_cart_items}}</strong></h5></th>
 					<th><h5>Tổng tiền:<strong> {{order.get_cart_total|floatformat:0}} đ</strong></h5></th>
 					<th>
-						<a  style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout' %}">Đặt bàn</a>
+						<a style="float:right; margin:5px; {% if order.get_cart_items == 0 %} pointer-events: none {% endif %}" class="btn btn-success" href="{% url 'checkout' %}">Đặt bàn</a>
 					</th>
 				</tr>
 			</table>

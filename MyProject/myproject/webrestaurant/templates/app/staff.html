@@ -62,11 +62,11 @@
   <div class="categories">
     <div class="categories_header">
       <h3>Thực đơn</h3>
-      <form class="d-flex" role="search" method="POST" action="{% url 'search' %}">
+      <!-- <form class="d-flex" role="search" method="POST" action="{% url 'search' %}">
         {% csrf_token %}
         <input class="form-control me-2" style="width: 80%;" type="search" placeholder="Tìm kiếm" name="searchkey" aria-label="search">
         <button class="btn btn-outline-success" style="background: aliceblue;" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
-      </form>
+      </form> -->
     </div>
     <div class="category">
       {% for category in categories %}
@@ -74,7 +74,7 @@
           <div class="category_name"><p>{{category.name}}</p></div>
           <div class="products">
             {% for product in products %}
-              {% if product.Category == category %}
+              {% if product.category == category %}
                 <div class="col-lg-3">
                   <img class="thumbnail" src="{{product.image.url}}">
                   <div class="box-element product">
@@ -118,7 +118,7 @@
           <div class="cart-table" style="flex:1"><strong>Giá</strong></div>
           <div class="cart-table" style="flex:1"><strong>Số lượng</strong></div>
           <div class="cart-table" style="flex:1"><strong>Tổng giá</strong></div>
-          <div style="flex:1"></div>
+          <div style="width: 5%;"></div>
         </div>
         {% for detail in detailbill %}
           <div class="cart-row">
@@ -133,7 +133,7 @@
               </div>
             </div>
             <div  class="cart-table" style="flex:1"><p>{{detail.get_total|floatformat:0}} đ</p></div>
-            <div style="flex:1">
+            <div style="width: 5%;">
               <a style="color: red;"><i class="fa-solid fa-circle-xmark"></i></a>
             </div>
           </div>
@@ -208,69 +208,69 @@
     a4  =[ 595.28,  841.89];  // for a4 size pap
     //create pdf 
     function createPDF(id){ 
-    const  content =  '<!DOCTYPE html><html lang="en"> <head>'
-                      +'<meta charset="utf-8"><title>Hóa đơn</title>'
-                      +'<link rel="stylesheet" href="'+'{% static "app/css/bill.css" %}'+'" media="all" />'
-                      +'</head><body>'
-                      +'<header class="clearfix">'
-                      +'<h1 style="width: 17cm">Thông tin hóa đơn</h1>'
-                      +'<div id="company" class="clearfix">'
-                      +'<div><span>Nhà hàng</span> Hương Quê</div>'
-                      +'<div><span>Địa chỉ</span> 137 - Hùng Vương, Ngũ Hành Sơn, Đà Nẵng</div>'
-                      +'<div><span>Email</span> <a href="mailto:royalrestaurant137@gmail.com">royalrestaurant137@gmail.com</a></div>'
-                      +'</div>'
-                      +'<div id="project">'
-                      +'<div><span>Bàn</span>{% if bill.id_table.count == 1 %}'
-                      +'{{bill.id_table.first.id}}'
-                      +'{% else %}'
-                      +'{% for table in bill.id_table.all %} '
-                      +'{% if table == bill.id_table.last %}'
-                      +'{{table.id}}'
-                      +'{% else %}'
-                      +'{{table.id}},'
-                      +'{% endif %}'
-                      +'{% endfor %}'
-                      +'{% endif %}'
-                      +'</div>'
-                      +'<div><span>Nhân viên</span> Hoàng Nam</div>'
-                      +'<div><span>Giờ vào</span> {{bill.date_created}}</div>'
-                      +'<div><span>Giờ ra</span> {{datetime.now}}</div>'
-                      +'</div>'
-                      +'</header>'
-                      +'<main>'
-                      +'<table>'
-                      +'<thead>'
-                      +'<tr>'
-                      +'<th class="service">Tên món</th>'+'<th>Đơn giá</th>'+'<th>Số lượng</th>'+'<th>Tổng giá</th>'+'</tr>'+'</thead>'
-                      +'<tbody>'
-                      +'{% for detail in detailbill %}'
-                      +'<tr>'
-                      +'<td class="service">{{detail.product.name}}</td>'
-                      +'<td class="unit">{{detail.product.price|floatformat:0}} đ</td>'
-                      +'<td class="qty">{{detail.quantity}}</td>'
-                      +'<td class="total">{{detail.get_total|floatformat:0}} đ</td>'
-                      +'</tr>'
-                      +'{% endfor %}'
-                      +'<tr>'
-                      +'<td colspan="3" class="grand total">Tổng tiền</td>'
-                      +'<td class="grand total">{{bill.get_bill_total|floatformat:0}} đ</td>'
-                      +'</tr>'
-                      +'<tr>'
-                      +'<td class="word total">Bằng chữ</td>'
-                      +'<td colspan="3" class="word total">{{ bill_total_word }} đồng</td>'
-                      +'</tr>'
-                      +'</tbody>'
-                      +'</table>'
-                      +'<!-- <div id="notices">'
-                      +'<div>NOTICE:</div>'
-                      +'<div class="notice">A finance charge of 1.5% will be made on unpaid balances after 30 days.</div>'
-                      +'</div> -->'
-                      +'</main>'
-                      +'<footer>'
-                      +'Chúc quý khách một ngày vui vẻ. Hẹn gặp lại quý khách!'
-                      +'</footer>'
-                      +'</body>'
-                      +'</html>';
+    // const  content =  '<!DOCTYPE html><html lang="en"> <head>'
+    //                   +'<meta charset="utf-8"><title>Hóa đơn</title>'
+    //                   +'<link rel="stylesheet" href="'+'{% static "app/css/bill.css" %}'+'" media="all" />'
+    //                   +'</head><body>'
+    //                   +'<header class="clearfix">'
+    //                   +'<h1 style="width: 17cm">Thông tin hóa đơn</h1>'
+    //                   +'<div id="company" class="clearfix">'
+    //                   +'<div><span>Nhà hàng</span> Hương Quê</div>'
+    //                   +'<div><span>Địa chỉ</span> 137 - Hùng Vương, Ngũ Hành Sơn, Đà Nẵng</div>'
+    //                   +'<div><span>Email</span> <a href="mailto:royalrestaurant137@gmail.com">royalrestaurant137@gmail.com</a></div>'
+    //                   +'</div>'
+    //                   +'<div id="project">'
+    //                   +'<div><span>Bàn</span>{% if bill.id_table.count == 1 %}'
+    //                   +'{{bill.id_table.first.id}}'
+    //                   +'{% else %}'
+    //                   +'{% for table in bill.id_table.all %} '
+    //                   +'{% if table == bill.id_table.last %}'
+    //                   +'{{table.id}}'
+    //                   +'{% else %}'
+    //                   +'{{table.id}},'
+    //                   +'{% endif %}'
+    //                   +'{% endfor %}'
+    //                   +'{% endif %}'
+    //                   +'</div>'
+    //                   +'<div><span>Nhân viên</span> Hoàng Nam</div>'
+    //                   +'<div><span>Giờ vào</span> {{bill.date_created}}</div>'
+    //                   +'<div><span>Giờ ra</span> {{datetime.now}}</div>'
+    //                   +'</div>'
+    //                   +'</header>'
+    //                   +'<main>'
+    //                   +'<table>'
+    //                   +'<thead>'
+    //                   +'<tr>'
+    //                   +'<th class="service">Tên món</th>'+'<th>Đơn giá</th>'+'<th>Số lượng</th>'+'<th>Tổng giá</th>'+'</tr>'+'</thead>'
+    //                   +'<tbody>'
+    //                   +'{% for detail in detailbill %}'
+    //                   +'<tr>'
+    //                   +'<td class="service">{{detail.product.name}}</td>'
+    //                   +'<td class="unit">{{detail.product.price|floatformat:0}} đ</td>'
+    //                   +'<td class="qty">{{detail.quantity}}</td>'
+    //                   +'<td class="total">{{detail.get_total|floatformat:0}} đ</td>'
+    //                   +'</tr>'
+    //                   +'{% endfor %}'
+    //                   +'<tr>'
+    //                   +'<td colspan="3" class="grand total">Tổng tiền</td>'
+    //                   +'<td class="grand total">{{bill.get_bill_total|floatformat:0}} đ</td>'
+    //                   +'</tr>'
+    //                   +'<tr>'
+    //                   +'<td class="word total">Bằng chữ</td>'
+    //                   +'<td colspan="3" class="word total">{{ bill_total_word }} đồng</td>'
+    //                   +'</tr>'
+    //                   +'</tbody>'
+    //                   +'</table>'
+    //                   +'<!-- <div id="notices">'
+    //                   +'<div>NOTICE:</div>'
+    //                   +'<div class="notice">A finance charge of 1.5% will be made on unpaid balances after 30 days.</div>'
+    //                   +'</div> -->'
+    //                   +'</main>'
+    //                   +'<footer>'
+    //                   +'Chúc quý khách một ngày vui vẻ. Hẹn gặp lại quý khách!'
+    //                   +'</footer>'
+    //                   +'</body>'
+    //                   +'</html>';
       const printWindow = window.open('{% url "bill" bill.id %}', '_blank');
       // printWindow.document.write(content);
       // printWindow.document.close();

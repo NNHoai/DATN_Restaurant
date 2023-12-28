@@ -6,8 +6,9 @@
       <a href="{% url 'manage' %}" ><i class="fa-solid fa-table"></i>Thực đơn</a>
       <a href="{% url 'manageproduct' %}" ><i class="fa-solid fa-table"></i>Món ăn</a>
       <a href="{% url 'managetable' %}" ><i class="fa-solid fa-door-open"></i>Bàn/Phòng</a>
-      <a href="#" ><i class="fa-solid fa-clipboard-user"></i>Nhân viên</a>
-      <a href="#" ><i class="fa-solid fa-users"></i>Khách hàng</a>
+      <a href="{% url 'managebooking' %}" ><i class="fa-solid fa-door-open"></i>Đặt bàn</a>
+      <a href="{% url 'managestaff' %}" ><i class="fa-solid fa-clipboard-user"></i>Nhân viên</a>
+      <a href="{% url 'managecustomer' %}" ><i class="fa-solid fa-users"></i>Khách hàng</a>
       <button class="dropdown-btn">
         <i class="fa-solid fa-square-poll-vertical"></i>Thống kê
         <i class="fa fa-caret-down" style="width: auto; padding-top: 5px"></i>

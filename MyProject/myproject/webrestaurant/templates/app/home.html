@@ -71,10 +71,10 @@
     </div>
     <div class="categories" >
         {% for category in categories %}
-            <div class="row" >
+            <div class="row">
                 <div class="header_categories"><h4>{{category.name}}</h4> </div>
                 {% for product in products %}
-                    {% if product.Category == category %}
+                    {% if product.category == category %}
                         <div class="col-lg-3">
                             <img class="thumbnail" src="{{product.image.url}}">
                             <div class="box-element product">

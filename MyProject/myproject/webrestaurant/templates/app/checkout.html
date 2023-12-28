@@ -8,10 +8,12 @@
 					{% csrf_token %}
 					<div id="user-info">
 						<div class="form-field">
-							<input required class="form-control" type="text" name="name" placeholder="Họ tên..">
+							<!-- <input required class="form-control" type="text" name="name" placeholder="Họ tên.."> -->
+							{{form.name}}
 						</div>
 						<div class="form-field">
-							<input required class="form-control" type="phone" name="email" placeholder="Số điện thoại..">
+							<!-- <input required class="form-control" type="phone" name="email" placeholder="Số điện thoại.."> -->
+							{{form.phone}}
 						</div>
 					</div>
 					
@@ -20,12 +22,13 @@
 						<p>Thông tin thêm:</p>
 						<hr>
 						<div class="form-field" >
-							<input class="form-control" type="email" name="email" placeholder="email..">
+							<!-- <input class="form-control" type="email" name="email" placeholder="email.."> -->
+							{{form.email}}
 						</div>
 						<div class="form-field">
 							<div class="" style="display:flex; flex-direction: row;">
 								<input class="form-control" style="width: 35%;" type="number" name="numpeople" placeholder="Số người.." min="1" max="1000" required>
-								<input class="form-control" style="width: 65%;" type="datetime-local" name="dateorder" placeholder="Ngày giờ..">
+								<input class="form-control" style="width: 65%;" type="datetime-local" name="dateobooking" placeholder="Ngày giờ..">
 							</div>
 						</div>
 						<textarea class="form-control" rows="4" name="description" placeholder="Yêu cầu thêm.." ></textarea>	

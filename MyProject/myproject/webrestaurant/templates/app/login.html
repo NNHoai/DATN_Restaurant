@@ -17,7 +17,7 @@
                         {% csrf_token %}
                         <div class="form-outline mb-4">
                             <label class="form-label" for="form3Example1cg">Tên đăng nhập</label>
-                            <input type="text" id="form3Example1c" class="form-control" name="username" />
+                            <input type="text" id="form3Example1c" class="form-control" name="username" value="{{user.username}}"/>
                         </div>
                         
                         <div class="form-outline mb-4">

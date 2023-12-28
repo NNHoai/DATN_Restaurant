@@ -10,7 +10,8 @@
     <table class="table">
       <thead>
         <tr>
-          <th scope="col" style="width: 5%">ID</th>
+          <th scope="col" style="width: 5%">STT</th>
+          <!-- <th scope="col" style="width: 5%">ID</th> -->
           <th scope="col">Tên bàn</th>
           <th scope="col" style="width: 20%">Trạng thái</th>
           <th scope="col" style="width: 10%"></th>
@@ -19,7 +20,8 @@
       <tbody>
         {% for table in tables %}
           <tr style=" height: 80px;">
-            <th scope="row">{{table.id}}</th>
+            <th scope="row">{{forloop.counter}}</th>
+            <!-- <th scope="row">{{table.id}}</th> -->
             <td>{{ table.name}}</td>
             <td>{{ table.status}}</td>
             <td>

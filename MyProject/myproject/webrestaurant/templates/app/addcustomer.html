@@ -1,0 +1,49 @@
+{% extends 'app/manage.html' %} {% load static %}
+
+{% block content %}
+<div class="form_content">
+  <h2>Thêm khách hàng</h2>
+  <div class="input_form">
+    <form method="POST" action="" enctype="multipart/form-data" style="width: 63%;">
+      {% csrf_token %}
+      
+        <div class="row_input"  style="padding: 1rem;">
+          <label class="form-label label-text" for="form3Example1cg">Tên đăng nhập</label>
+          <div class="input_dj text-field">{{form.username}}</div>
+        </div>
+        <div class="form-outline ">
+        <div class="row_input"  style="padding: 1rem;">
+          <label class="form-label label-text" for="form3Example1cg">Tên khách hàng</label>
+          <div class="input_dj text-field">{{form.first_name}}</div>
+        </div>
+        <div class="row_input"  style="padding: 1rem;">
+          <label class="form-label label-text" for="form3Example1cg">Số điện thoại</label>
+          <div class="input_dj text-field">{{form1.phone}}</div>
+        </div>
+        <div class="row_input"  style="padding: 1rem;">
+          <label class="form-label label-text" for="form3Example1cg">Email</label>
+          <div class="input_dj text-field">{{form.email}}</div>
+        </div>
+        <div class="row_input"  style="padding: 1rem;">
+          <label class="form-label label-text" for="form3Example1cg">Địa chỉ</label>
+          <div class="input_dj text-field">{{form1.address}}</div>
+        </div>
+        <div class="row_input"  style="padding: 1rem; margin-top:1rem;">
+          <label class="form-label label-text" for="form3Example1cg">Mật khẩu</label>
+          <div class="input_dj text-field">{{form.password1}}</div>
+        </div>
+        <div class="row_input"  style="padding: 1rem;">
+          <label class="form-label label-text" for="form3Example1cg">Nhập lại mật khẩu</label>
+          <div class="input_dj text-field">{{form.password2 }}</div>
+        </div>
+        
+      </div>
+      <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
+          Thêm khách hàng
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

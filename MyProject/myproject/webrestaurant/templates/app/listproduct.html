@@ -1,8 +1,10 @@
+{% load customtemplate %}
 {% for category in categories %}
   <div class="list_product" id="{{category.id}}">
     <table class="table">
       <thead>
         <tr>
+          <!-- <th scope="col" style="width: 3%">STT</th> -->
           <th scope="col" style="width: 3%">ID</th>
           <th scope="col">Tên món</th>
           <th scope="col" style="width: 8%">Giá</th>
@@ -15,15 +17,18 @@
         </tr>
       </thead>
       <tbody>
+        {% with num=0 %}     
         {% for product in products %}
-          {% if product.Category == category %}
+          {% if product.category == category %}
             <tr style=" height: 80px;">
+              <!-- <th scope="row">{{num|increment}}</th> -->
+              <!-- <th scope="row">{{forloop.counter}}</th> -->
               <th scope="row">{{product.id}}</th>
               <td>{{ product.name}}</td>
               <td>{{ product.price|floatformat:0}} đ</td>
               <td style="overflow-y: auto; white-space: nowrap;">{{ product.description }}</td>
               <td>{{ product.active}}</td>
-              <td>{{ product.Category}}</td>
+              <td>{{ product.category}}</td>
               <td><img src="{{ product.image.url }}"></td>
               <td>{{ product.date_added|date:'Y-m-d H:i'}}</td>
               <td>
@@ -31,8 +36,9 @@
                 <a style="color: red;" href="{% url 'deleteproduct' product.id %}"><i class="fa-solid fa-delete-left"></i></a>
               </td>
             </tr>
-            {% endif %}
-          {% endfor %}      
+          {% endif %}   
+        {% endfor %}
+        {% endwith %}   
       </tbody>
     </table>
   </div>   

@@ -288,7 +288,9 @@ function updateTable(table1, table2, action) {
         })
         .then((data) => {
             console.log('data', data);
-            createPDF('total_bill');
+            if(action == 'checkout'){
+                createPDF('total_bill');
+            };
             location.reload();
         })
 };

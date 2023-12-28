@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # 'webrestaurant.apps.WebrestaurantConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'webrestaurant'
+    'webrestaurant',
 ]
 
 # AUTH_USER_MODEL = 'webrestaurant.User'
@@ -67,7 +68,11 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                
             ],
+             'libraries':{
+               'customtemplate': 'webrestaurant.templatetags.customtemplate',
+            }
         },
     },
 ]

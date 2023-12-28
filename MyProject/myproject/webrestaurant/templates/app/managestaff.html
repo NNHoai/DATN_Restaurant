@@ -1,0 +1,45 @@
+{% extends 'app/manage.html' %} 
+{% load static %} 
+{% block content %}
+<div class="manage_content" style="overflow: hidden;">
+  
+  <div class="btn_action_add">
+    <a id="add_category" class="" href="{% url 'addstaff' %}">Thêm nhân viên</a>
+  </div>
+  <div class="table_categorys">
+    <table class="table" style="width: 100%;">
+      <thead>
+        <tr>
+          <th scope="col" style="width: 3%">STT</th>
+          <!-- <th scope="col" style="width: 3%">ID</th> -->
+          <th scope="col">Tên nhân viên</th>
+          <th scope="col" style="width: 12%">Username</th>
+          <th scope="col" style="width: 15%;">Số điện thoại</th>
+          <th scope="col" style="width: 20%">Email</th>
+          <th scope="col">Địa chỉ</th>
+          <th scope="col" style="width: 5%"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for staff in staffs %}
+          <tr >
+            <th scope="row">{{forloop.counter}}</th>
+            <!-- <th scope="row">{{staff.id}}</th> -->
+            <td>{{ staff.name}}</td>
+            <td>{{ staff.user}}</td>  
+            <td>{{ staff.phone}}</td>
+            <td>{{ staff.email}}</td>
+            <td>{{ staff.address}}</td>
+            <td>
+              <a style="color: blue;" href="{% url 'updatestaff' staff.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
+              <a style="color: red;" href="{% url 'deletestaff' staff.id %}"><i class="fa-solid fa-delete-left"></i></a>
+            </td>
+          </tr>
+        {% endfor %}  
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,45 @@
+{% extends 'app/manage.html' %} 
+{% load static %} 
+{% block content %}
+<div class="manage_content" style="overflow: hidden;">
+  
+  <div class="btn_action_add">
+    <a id="add_category" class="" href="{% url 'addcustomer' %}">Thêm khách hàng</a>
+  </div>
+  <div class="table_categorys">
+    <table class="table" style="width: 100%;">
+      <thead>
+        <tr>
+          <th scope="col" style="width: 3%">STT</th>
+          <!-- <th scope="col" style="width: 3%">ID</th> -->
+          <th scope="col">Tên khách hàng</th>
+          <th scope="col" style="width: 12%">Username</th>
+          <th scope="col" style="width: 15%;">Số điện thoại</th>
+          <th scope="col" style="width: 20%">Email</th>
+          <th scope="col">Địa chỉ</th>
+          <th scope="col" style="width: 5%"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for customer in customers %}
+          <tr >
+            <th scope="row">{{forloop.counter}}</th>
+            <!-- <th scope="row">{{customer.id}}</th> -->
+            <td>{{ customer.name}}</td>
+            <td>{{ customer.user}}</td>
+            <td>{{ customer.phone}}</td>
+            <td>{{ customer.email}}</td>
+            <td>{{ customer.address}}</td>
+            <td>
+              <a style="color: blue;" href="{% url 'updatecustomer' customer.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
+              <a style="color: red;" href="{% url 'deletecustomer' customer.id %}"><i class="fa-solid fa-delete-left"></i></a>
+            </td>
+          </tr>
+        {% endfor %}  
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+

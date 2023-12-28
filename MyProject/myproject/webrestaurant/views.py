@@ -1,13 +1,15 @@
-from datetime import datetime
+# from datetime import datetime, date
+import datetime
 import json
+from operator import itemgetter
 import random
 from num2words import num2words
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, JsonResponse
+from django.contrib.auth.decorators import login_required
 
-from .forms import CategoryForm, ProductForm, TableForm
+from .forms import AccountForm, CategoryForm, CreateUserForm, InfoBookingForm, ProductForm, TableForm
 from .models import *
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
@@ -28,14 +30,18 @@ def loginpage(request):
             return redirect('home')
         else:
             message = 'Tài khoản hoặc mật khẩu chưa đúng!'
-            
-    usercheck = False
-    context = {'usercheck' : usercheck, 'message' : message, 'order': order}
+
+    context = {'message' : message, 'order': order}
     return render(request, 'app/login.html', context)
+
 def loginstaff(request):
     message = ''
     if request.user.is_authenticated:
-        return redirect('staff')
+        type = Account.objects.get(user=request.user).type
+        if type == 'ADMIN':
+            return redirect('manage')
+        elif type == 'EMPLOYEE':
+            return redirect('staff')
     if request.method == "POST":
         username1 = request.POST.get('username')
         password1 = request.POST.get('password')
@@ -43,13 +49,21 @@ def loginstaff(request):
         
         if user is not None:
             login(request, user)
-            return redirect('staff')
+            type = Account.objects.get(user=request.user).type
+            print(type)
+            if type == 'ADMIN':
+                return redirect('manage')
+            elif type == 'EMPLOYEE':
+                return redirect('staff')
+            else:
+                message = 'Hãy dùng tài khoản của nhân viên!'
         else:
             message = 'Tài khoản hoặc mật khẩu chưa đúng!'
-            
-    usercheck = False
-    context = {'usercheck' : usercheck, 'message' : message}
+
+    context = { 'message' : message}
     return render(request, 'app/loginstaff.html', context)
+
+@login_required(login_url='/loginstaff/')
 def manage(request):
     message = ''
     if request.user.is_authenticated and request.method == "GET":
@@ -58,29 +72,17 @@ def manage(request):
         products = Product.objects.all()
         context = {'n': n, 'categories': categories, 'products': products}
         return render(request,'app/managecategory.html',context)
-    if request.method == "POST":
-        username1 = request.POST.get('username')
-        password1 = request.POST.get('password')
-        user = authenticate(request, username=username1, password=password1)
-        
-        if user is not None:
-            login(request, user)
-            return redirect('manage')
-        else:
-            message = 'Tài khoản hoặc mật khẩu chưa đúng!'
             
-    usercheck = False
-    context = {'usercheck' : usercheck, 'message' : message}
-    return render(request, 'app/loginstaff.html', context)
+
+@login_required(login_url='/loginstaff/')
 def staff(request):
-    message = ''
     if request.user.is_authenticated and request.method == "GET":
         tableid = request.GET.get('tableid', '')
         if(tableid == ''):
             tableid = 1
         tables = Table.objects.all()
-        products = Product.objects.all()
-        categories = Category.objects.all()
+        products = Product.objects.filter(active=True)
+        categories = Category.objects.filter(active=True)
 
         tablebill = Table.objects.get(id=tableid)
         
@@ -99,31 +101,21 @@ def staff(request):
         #     print(b.id)
         #     print(bill.id_table.count())
 
-        tables = Table.objects.all()
-        products = Product.objects.all()
-        categories = Category.objects.all()
+        # tables = Table.objects.all()
+        # products = Product.objects.all()
+        # categories = Category.objects.all()
         bill_total_word = num2words(bill.get_bill_total, lang='vi')
         context = {'table' : tablebill, 'tables' : tables, 'products' : products, 'categories' : categories, 'bill' : bill, 'detailbill': detailbill, 'bill_total_word': bill_total_word}
         return render(request, 'app/staff.html', context)
-    if request.method == "POST":
-        username1 = request.POST.get('username')
-        password1 = request.POST.get('password')
-        user = authenticate(request, username=username1, password=password1)
-        
-        if user is not None:
-            
-            login(request, user)
-            return redirect('staff')
-        else:
-            message = 'Tài khoản hoặc mật khẩu chưa đúng!'
-            
-    usercheck = False
-    context = {'usercheck' : usercheck, 'message' : message}
-    return render(request, 'app/loginstaff.html', context)
-   
+
 def logoutpage(request):
     logout(request)
     return redirect('login')
+
+def logoutstaff(request):
+    logout(request)
+    return redirect('loginstaff')
+
 def register(request):
     form = CreateUserForm()
     order = {'get_cart_items' : 0}
@@ -131,51 +123,122 @@ def register(request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
-        username = form.cleaned_data['username']
-        name = form.cleaned_data['first_name']
-        email = form.cleaned_data['email']
-        user = User.objects.get(username=username)
-        account = account(user=user, name=name, phone='', email=email, address='')
-        account.save()
-        message = 'Đăng ký thành công. Mời bạn đang nhập!'
-        return redirect('/login/', message)      
+            username = form.cleaned_data['username']
+            name = form.cleaned_data['first_name']
+            email = form.cleaned_data['email']   
+            user = User.objects.get(username=username)
+            account = Account(user=user, name=name, phone='', email=email, address='', type='CUSTOMER')
+            account.save()
+            message = 'Đăng ký thành công. Mời bạn đang nhập!'
+            context = {'message': message, 'user': user}
+            return render(request, 'app/login.html', context)   
+    
     context = {'form': form, 'order': order}
     return render(request, 'app/register.html', context)
-# def registerstaff(request):
-#     form = CreateUserForm()
-#     if request.method == "POST":
-#         form = CreateUserForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#         username = form.cleaned_data['username']
-#         name = form.cleaned_data['first_name']
-#         email = form.cleaned_data['email']
-#         user = User.objects.get(username=username)
-#         account = account(user=user, name=name, phone='', email=email, address='')
-#         account.save()
-#         message = 'Đăng ký thành công. Mời bạn đang nhập!'
-#         return redirect('/loginstaff/', message)      
-#     context = {'form': form, 'order': order}
-#     return render(request, 'app/register.html', context)     
+
+@login_required(login_url='/login/')
+def infocustomer(request):
+    categories = Category.objects.filter(active=True)
+    user = request.user
+    customer = Account.objects.get(user=user)
+    order, created = Order.objects.get_or_create(account=customer,complete=False)
+    form = AccountForm(instance=customer)
+    form1 = CreateUserForm(instance=user)
+    
+    if request.method == 'POST':
+        form2 = AccountForm(request.POST, instance=customer)
+
+        user.first_name = form['name'].value()
+        user.email = form2['email'].value()
+        user.save()
+
+        customer.name = form2['name'].value()
+        customer.phone = form2['phone'].value()
+        customer.email = form2['email'].value()
+        customer.address = form2['address'].value()
+        customer.save()
+        
+        message='Cập nhật thông tin thành công!'
+
+        user = request.user
+        customer = Account.objects.get(user=user)
+       
+        form = AccountForm(instance=customer)
+        form1 = CreateUserForm(instance=user)
+
+        context = {'categories' : categories, 'order' : order, 'form': form, "form1": form1, "message": message} 
+        return render(request, 'app/infoCustomer.html', context)
+    
+    context = {'categories' : categories, 'order' : order, 'form': form, "form1": form1} 
+    return render(request, 'app/infoCustomer.html', context)
+
+@login_required(login_url='/loginstaff/')
+def infostaff(request):
+
+    message = ''
+    user = request.user
+    staff = Account.objects.get(user=user)
+    form = AccountForm(instance=staff)
+    form1 = CreateUserForm(instance=user)
+    
+    if request.method == 'POST':
+        form = AccountForm(request.POST, instance=staff)
+        form1 = CreateUserForm(request.POST, instance=user)
+
+        user.first_name = form['name'].value()
+        user.email = form['email'].value()
+        user.save()
+
+        staff.name = form['name'].value()
+        staff.phone = form['phone'].value()
+        staff.email = form['email'].value()
+        staff.address = form['address'].value()
+        staff.save()
+
+        message='Cập nhật thông tin thành công!'
+        return redirect('staff')
+        
+    
+    context = {'form': form, "form1": form1, "message": message} 
+    return render(request, 'app/infoStaff.html', context)
+
+
 def home(request):
     if request.user.is_authenticated:
-        account = request.user.account
+        user = request.user
+        account = Account.objects.get(user=user)
         order, created = Order.objects.get_or_create(account=account,complete=False)
-        usercheck = True
     else:
-        usercheck = False
         order = {'get_cart_items' : 0}
-    categories = Category.objects.all()
-    products = Product.objects.all()
+    
+    categories = Category.objects.filter(active=True)
+    products = Product.objects.filter(active=True)
+
+    detailbills = DetailBill.objects.all()
+    listdetail = []
+    for i in range(len(detailbills)):
+        checkcategory = Product.objects.get(id=detailbills[i].product_id).category_id
+        if checkcategory != 1:
+            checkproduct = False
+            for tem in listdetail:
+                if detailbills[i].product_id == tem[0]:
+                    checkproduct = True
+            if not checkproduct:
+                val = detailbills[i].quantity
+                for j in range(i+1, len(detailbills)):
+                    if detailbills[j].product_id == detailbills[i].product_id:
+                        val += detailbills[j].quantity
+                listdetail.append((detailbills[i].product_id, val))
+    toplist = sorted(listdetail, key=itemgetter(1), reverse=True)[:3]
     topproducts = []
     for i in range(3):
-        random_idx = random.randint(0, Product.objects.count() - 1)
-        product_random = Product.objects.all()[random_idx]
-        topproducts.append(product_random)
-    context = {'usercheck': usercheck,'products' : products, 'categories' : categories, 'order' : order, 'topproducts': topproducts} 
-    return render(request, 'app/home.html', context)                                                                                                                                                                                                                                                                                                                      
+       topproducts.append(Product.objects.get(id=toplist[i][0]))
+
+    context = {'products' : products, 'categories' : categories, 'order' : order, 'topproducts': topproducts} 
+    return render(request, 'app/home.html', context)
+                                                                                                                                                                                                                                                                                                                      
 def search(request):
-    categories = Category.objects.all()
+    categories = Category.objects.filter(active=True)
     order = {'get_cart_items' : 0}
     if request.method == 'POST':
         searchkey = request.POST['searchkey']
@@ -183,20 +246,17 @@ def search(request):
     if request.user.is_authenticated:
         account = request.user.account
         order, created = Order.objects.get_or_create(account=account,complete=False)
-        
-        usercheck = True
     else:
-        usercheck = False
         order = {'get_cart_items' : 0}
-    context = {'categories': categories, 'order' : order, 'usercheck': usercheck, "searchkey": searchkey, "keys": keys}
+    context = {'categories': categories, 'order' : order, "searchkey": searchkey, "keys": keys}
     return render(request, 'app/search.html', context)                                                                                                                                                                                                                                                                                                                                    
 
 def categories(request):
-    categories = Category.objects.all()
+    categories = Category.objects.filter(active=True)
     order = {'get_cart_items' : 0}
     categoryid = request.GET.get('categoryid','')
     category = Category.objects.get(id=categoryid)
-    products = Product.objects.filter(Category=category)
+    products = Product.objects.filter(category=category, active=True)
     if request.user.is_authenticated:
         account = request.user.account
         order, created = Order.objects.get_or_create(account=account,complete=False)
@@ -206,8 +266,9 @@ def categories(request):
         order = {'get_cart_items' : 0}
     context = {'categories': categories, 'category': category,'order' : order, 'usercheck': usercheck, "products": products}
     return render(request, 'app/categories.html', context)
+
 def cart(request):
-    categories = Category.objects.all()
+    categories = Category.objects.filter(active=True)
     if request.user.is_authenticated:
         account = request.user.account
         order, created = Order.objects.get_or_create(account=account, complete = False)
@@ -216,7 +277,8 @@ def cart(request):
         items = []
         order = {'get_cart_items' : 0, 'get_cart_total' : 0}
     context = { 'categories' : categories, 'items': items, 'order' : order } 
-    return render(request, 'app/cart.html', context)                                                                                                                                                                                                                                                                                                                                                                               
+    return render(request, 'app/cart.html', context)  
+                                                                                                                                                                                                                                                                                                                                                                             
 def updateitem(request):
     data = json.loads(request.body)
     productid = data['productid']
@@ -233,22 +295,61 @@ def updateitem(request):
     if orderitem.quantity <= 0:
         orderitem.delete()
     return JsonResponse('updated', safe=False)
+
 def checkout(request):
-    categories = Category.objects.all()
+    categories = Category.objects.filter(active=True)
     if request.user.is_authenticated:
         account = request.user.account
+        form = AccountForm(instance=account)
         order, created = Order.objects.get_or_create(account=account, complete = False)
         items = order.orderitem_set.all()
         if request.method == "POST":
-            username1 = request.POST.get('username')
-            password1 = request.POST.get('password')
+            form = AccountForm(request.POST, instance=account)
+            numpeople = request.POST.get('numpeople')
+            datebooking = request.POST.get('dateobooking')
+            description = request.POST.get('description')
+            name = form['name'].value()
+            phone = form['phone'].value()
+            email = form['email'].value()
+            date_added = datetime.datetime.now()
+            infobooking = InfoBooking(account=account,order=order,name=name,phone=phone,email=email,numpeople=numpeople,date_added=date_added,date_booking=datebooking,description=description)
+            infobooking.save()
+            
+            order.complete = True
+            order.save()
+
+            return redirect('bookingtable')
+
     else:
         items = []
         order = {'get_cart_items' : 0, 'get_cart_total' : 0}
-    context = { 'categories' : categories, 'items': items, 'order' : order } 
+        form = AccountForm()
+        
+    context = { 'categories' : categories, 'items': items, 'order' : order, 'form' : form } 
     return render(request, 'app/checkout.html', context) 
+
+# @login_required(login_url='/loginstaff/')
+def bookingtable(request):
+    categories = Category.objects.filter(active=True)
+    if request.user.is_authenticated:
+        account = request.user.account
+        order, created = Order.objects.get_or_create(account=account, complete = False)
+        
+        infobooking = InfoBooking.objects.filter(account=account, status='WAIT')
+        items = []
+        for i in infobooking:
+            items.append(OrderItem.objects.filter(order=i.order))           
+       
+    else:
+        items=[]
+        infobooking = {}
+        order = {'get_cart_items' : 0, 'get_cart_total' : 0}
+
+    context = { 'categories' : categories, 'order' : order, 'items' : items, 'infobooking' : infobooking } 
+    return render(request, 'app/bookingtable.html', context) 
+
 def detail(request):
-    categories = Category.objects.all()
+    categories = Category.objects.filter(active=True)
     if request.user.is_authenticated:
         account = request.user.account
         order, created = Order.objects.get_or_create(account=account, complete = False)
@@ -297,7 +398,7 @@ def updatebill(request):
         for table in tables:
             table.status = 'busy'
             table.save()
-        bill.date_created = datetime.now()
+        bill.date_created = datetime.datetime.now()
 
     detailbill, created = DetailBill.objects.get_or_create(bill=bill, product=product)
 
@@ -331,21 +432,50 @@ def updatetablebill(request):
     if action != 'checkout':
         table2 = Table.objects.get(id=id_table2)
 
+
+    # checkbill = Bill.objects.filter(id_table=table1, status='unpaid')
+    # if not checkbill.exists():
+    #     bill = Bill.
+
+
     bill1 = Bill.objects.get(id_table=table1, status = "unpaid")
     
     if action == 'merge':
         
         #change detailbill2 to detailbill1
-        bill2 = Bill.objects.get(id_table=table2, status = "unpaid")
+        bill2, create = Bill.objects.get_or_create(id_table=table2, status = "unpaid")
         detailbill2 = DetailBill.objects.filter(bill=bill2)
-        detailbill2.update(bill=bill1)
+        
+        detailbill1 = DetailBill.objects.filter(bill=bill1)
+        if detailbill1.exists():
+            for detail in detailbill2:
+                product = Product.objects.get(id=detail.product_id)
+                checkdetail = DetailBill.objects.filter(bill=bill1, product=product)
+                if checkdetail.exists():
+                    checkdetail[0].quantity += detail.quantity
+                    checkdetail[0].save()
+                else:
+                    detail.bill=bill1
+                    detail.save()
+        else: 
+            detailbill2.update(bill=bill1)
+
+        if table2.status == "empty":
+            table2.status = "busy"
+            table2.save()
 
         bill2.status = "paid"
         bill2.total_price = 0
         bill2.save()
 
+        if table1.status == "empty":
+            table1.status = "busy"
+            table1.save()
+
         # add table2 in bill1
-        bill1.id_table.add(table2)
+        for table in bill2.id_table.all():
+            bill1.id_table.add(table)
+        
         bill1.total_price = bill1.get_bill_total
         bill1.save()
         # bill1.id_table.remove(table2)
@@ -356,14 +486,22 @@ def updatetablebill(request):
         # table2 is empty
         bill2 = Bill.objects.get(id_table=table2, status = "unpaid")
 
-        detailbill1 = DetailBill.objects.filter(bill=bill1)
-        detailbill1.update(bill=bill2)
+        if bill1.id_table.all().count() == 1:
+           
+            detailbill1 = DetailBill.objects.filter(bill=bill1)
+            detailbill1.update(bill=bill2)
+            bill1.status = 'paid'
+        
+        else:
+            bill1.id_table.remove(table1)
+            bill1.id_table.add(table2)
+            bill2.status = 'paid'
 
         bill1.total_price = bill1.get_bill_total
         bill1.save()
 
         bill2.total_price = bill2.get_bill_total
-        bill2.save()
+        bill2.save()    
 
         table1.status = "empty"
         table1.save()
@@ -385,6 +523,7 @@ def updatetablebill(request):
 
     return JsonResponse('updated', safe=False)         
 
+@login_required(login_url='/loginstaff/')
 def bill(request, pk):
     bill = Bill.objects.get(id=pk)
     detailbill = DetailBill.objects.filter(bill=bill)
@@ -410,6 +549,7 @@ def bill(request, pk):
 #     return JsonResponse('Checkout success!', safe=False)      
 
 
+@login_required(login_url='/loginstaff/')
 def manageproduct(request):
     message = ''
     if request.user.is_authenticated and request.method == "GET":
@@ -423,6 +563,7 @@ def manageproduct(request):
     context = {'usercheck' : usercheck, 'message' : message}
     return render(request, 'app/loginstaff.html', context)
 
+@login_required(login_url='/loginstaff/')
 def addproduct(request):
     form = ProductForm()
     if request.method == 'POST':
@@ -433,6 +574,7 @@ def addproduct(request):
     context = {"form": form}
     return render(request, 'app/addproduct.html', context)
 
+@login_required(login_url='/loginstaff/')
 def updateproduct(request, pk):
     product = Product.objects.get(id=pk)
     
@@ -447,13 +589,13 @@ def updateproduct(request, pk):
     context = {"form": form}
     return render(request, 'app/updateproduct.html', context)
 
+@login_required(login_url='/loginstaff/')
 def deleteproduct(request, pk):
     product = Product.objects.get(id=pk)
     product.delete()
     return redirect('manageproduct')
 
-
-
+@login_required(login_url='/loginstaff/')
 def addcategory(request):
     form = CategoryForm()
     if request.method == 'POST':
@@ -464,6 +606,7 @@ def addcategory(request):
     context = {"form": form}
     return render(request, 'app/addcategory.html', context)
 
+@login_required(login_url='/loginstaff/')
 def updatecategory(request, pk):
     category = Category.objects.get(id=pk)
     
@@ -478,13 +621,14 @@ def updatecategory(request, pk):
     context = {"form": form}
     return render(request, 'app/updatecategory.html', context)
 
+@login_required(login_url='/loginstaff/')
 def deletecategory(request, pk):
     category = Category.objects.get(id=pk)
     category.delete()
     return redirect('manage')
 
 
-
+@login_required(login_url='/loginstaff/')
 def managetable(request):
     message = ''
     if request.user.is_authenticated and request.method == "GET":
@@ -496,6 +640,7 @@ def managetable(request):
     context = {'usercheck' : usercheck, 'message' : message}
     return render(request, 'app/loginstaff.html', context)
 
+@login_required(login_url='/loginstaff/')
 def addtable(request):
     form = TableForm()
     if request.method == 'POST':
@@ -506,6 +651,7 @@ def addtable(request):
     context = {"form": form}
     return render(request, 'app/addtable.html', context)
 
+@login_required(login_url='/loginstaff/')
 def updatetable(request, pk):
     table = Table.objects.get(id=pk)
     
@@ -520,11 +666,179 @@ def updatetable(request, pk):
     context = {"form": form}
     return render(request, 'app/updatetable.html', context)
 
+@login_required(login_url='/loginstaff/')
 def deletetable(request, pk):
     table = Table.objects.get(id=pk)
     table.delete()
     return redirect('managetable')
 
+@login_required(login_url='/loginstaff/')
+def managebooking(request):
+    
+    infobooking = InfoBooking.objects.all()
+    items = []
+    for i in infobooking:
+        items.append(OrderItem.objects.filter(order=i.order))    
+ 
+    context = {'items' : items, 'infobooking' : infobooking } 
+    return render(request, 'app/managebooking.html', context) 
+
+@login_required(login_url='/loginstaff/')
+def updatebooking(request, pk):
+    booking = InfoBooking.objects.get(id=pk)
+    form = InfoBookingForm(instance=booking)
+
+    if request.method == 'POST':
+        form = InfoBookingForm(request.POST, instance=booking)
+        status = form['status'].value()
+        if status != booking.status:
+            booking.status = status
+            booking.save()
+        return redirect('managebooking')
+        
+    context = {"form": form}
+    return render(request, 'app/updatebooking.html', context)
+
+@login_required(login_url='/loginstaff/')
+def deletebooking(request, pk):
+    booking = InfoBooking.objects.get(id=pk)
+    booking.delete()
+    return redirect('managebooking')
+
+@login_required(login_url='/loginstaff/')
+def managestaff(request):
+    message = ''
+    if request.user.is_authenticated and request.method == "GET":
+        staffs = Account.objects.filter(type='EMPLOYEE')
+        
+        context = {'staffs': staffs}
+        return render(request,'app/managestaff.html',context)
+            
+    usercheck = False
+    context = {'usercheck' : usercheck, 'message' : message}
+    return render(request, 'app/loginstaff.html', context)
+
+@login_required(login_url='/loginstaff/')
+def addstaff(request):
+    form = CreateUserForm()
+    form1 = AccountForm()
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        form1 = AccountForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data['username']
+            name = form.cleaned_data['first_name']
+            email = form.cleaned_data['email']  
+            phone = form1['phone'].value()
+            address = form1['address'].value()
+            type = "EMPLOYEE"  
+            user = User.objects.get(username=username)
+            account = Account(user=user, name=name, phone=phone, email=email, address=address, type=type)
+            account.save()
+            return redirect('managestaff')
+    context = {"form": form, "form1": form1}
+    return render(request, 'app/addstaff.html', context)
+
+@login_required(login_url='/loginstaff/')
+def updatestaff(request, pk):
+    staff = Account.objects.get(id=pk)
+    user = User.objects.get(id=staff.user.id)
+    form = AccountForm(instance=staff)
+    form1 = CreateUserForm(instance=user)
+    if request.method == 'POST':
+        form = AccountForm(request.POST, instance=staff)
+        form1 = CreateUserForm(request.POST, instance=user)
+    
+        user.first_name = form['name'].value()
+        user.email = form['email'].value()
+        user.save()
+
+        staff.name = form['name'].value()
+        staff.phone = form['phone'].value()
+        staff.email = form['email'].value()
+        staff.address = form['address'].value()
+        staff.save()
+
+        return redirect('managestaff')
+        
+    context = {"form": form, "form1": form1}
+    return render(request, 'app/updatestaff.html', context)
+
+@login_required(login_url='/loginstaff/')
+def deletestaff(request, pk):
+    staff = Account.objects.get(id=pk)
+    staff.delete()
+    return redirect('managestaff')
+
+
+@login_required(login_url='/loginstaff/')
+def managecustomer(request):
+    message = ''
+    if request.user.is_authenticated and request.method == "GET":
+        customers= Account.objects.filter(type='CUSTOMER')
+        
+        context = {'customers': customers}
+        return render(request,'app/managecustomer.html',context)
+            
+    usercheck = False
+    context = {'usercheck' : usercheck, 'message' : message}
+    return render(request, 'app/logincustomer.html', context)
+
+@login_required(login_url='/loginstaff/')
+def addcustomer(request):
+    form = CreateUserForm()
+    form1 = AccountForm()
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        form1 = AccountForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data['username']
+            name = form.cleaned_data['first_name']
+            email = form.cleaned_data['email']  
+            phone = form1['phone'].value()
+            address = form1['address'].value()
+            type = "CUSTOMER"  
+            user = User.objects.get(username=username)
+            account = Account(user=user, name=name, phone=phone, email=email, address=address, type=type)
+            account.save()
+            return redirect('managecustomer')
+    context = {"form": form, "form1": form1}
+    return render(request, 'app/addcustomer.html', context)
+
+@login_required(login_url='/loginstaff/')
+def updatecustomer(request, pk):
+    customer = Account.objects.get(id=pk)
+    user = User.objects.get(id=customer.user.id)
+    form = AccountForm(instance=customer)
+    form1 = CreateUserForm(instance=user)
+    if request.method == 'POST':
+        form = AccountForm(request.POST, instance=customer)
+        form1 = CreateUserForm(request.POST, instance=user)
+
+        user.first_name = form['name'].value()
+        user.email = form['email'].value()
+        user.save()
+
+        customer.name = form['name'].value()
+        customer.phone = form['phone'].value()
+        customer.email = form['email'].value()
+        customer.address = form['address'].value()
+        customer.save()
+
+        return redirect('managecustomer')
+        
+    context = {"form": form, "form1": form1}
+    return render(request, 'app/updatecustomer.html', context)
+
+@login_required(login_url='/loginstaff/')
+def deletecustomer(request, pk):
+    customer = Account.objects.get(id=pk)
+    customer.delete()
+    return redirect('managecustomer')
+
+@login_required(login_url='/loginstaff/')
 def daystatistics(request):
     bills = Bill.objects.all()
     data = []
@@ -554,8 +868,9 @@ def daystatistics(request):
     context = {'label_data': label_data,'data': data, 'data1': data1, 'text_total': text_total, 'text_max': text_max, 'text_min': text_min}
     return render(request, 'app/managetatistics.html', context)
 
+@login_required(login_url='/loginstaff/')
 def monthstatistics(request):
-    print(datetime.date.today() + datetime.timedelta(days=1))
+    # print(datetime.date.today() + datetime.timedelta(days=1))
     bills = Bill.objects.all()
     data = []
     data1 = []

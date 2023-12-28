@@ -1,0 +1,59 @@
+{% extends 'app/manage.html' %} 
+{% load static %} 
+{% block content %}
+<div class="manage_content" style="overflow: hidden;">
+  <div class="table_categorys">
+		<table class="table" style="width: 100%;">
+		  <thead>
+			<tr>
+			  <th scope="col" style="width: 3%">STT</th>
+			  <!-- <th scope="col" style="width: 3%">ID</th> -->
+        	  <!-- <th scope="col" style="width: 12%">Tài khoản</th> -->
+			  <th scope="col" style="width: 12%">Tên</th>
+			  <th scope="col" style="width: 10%;">Số điên thoại</th>
+			  <th scope="col" style="width: 12%">Ngày tạo</th>
+			  <th scope="col" style="width: 12%">Ngày đặt bàn</th>
+			  <th scope="col" style="width: 7%;">Số người</th>
+			  <th scope="col" style="width: 12%;">Yêu cầu</th>
+			  <th scope="col">Danh sách món</th>
+			  <th scope="col" style="width: 10%">Trạng thái</th>
+        <th scope="col" style="width: 5%"></th>
+			</tr>
+		  </thead>
+		  <tbody>
+			{% for book in infobooking %}
+			  <tr >
+				<th scope="row">{{forloop.counter}}</th>
+				<!-- <th scope="row">{{book.id}}</th> -->
+        		<!-- <td>{{ book.account}}</td> -->
+				<td>{{ book.name}}</td>
+        		<td>{{ book.phone}}</td>
+				<td>{{ book.date_added |date:'Y-m-d H:i'}}</td>
+				<td>{{ book.date_booking |date:'Y-m-d H:i'}}</td>
+				<td style="text-align:center;">{{ book.numpeople}}</td>
+				<td style="word-break: break-word;">{{ book.description}}</td>
+				<td>
+					{% for item in items %}
+						{% for i in item %}
+							{% if i.order == book.order %}
+								{{i.product.name}} : {{i.quantity}} |
+							{% endif %}
+						{% endfor %}
+					{% endfor %}
+				</td>
+				<td>
+				{{book.status}}
+				</td>
+				<td>
+				  <a style="color: blue;" href="{% url 'updatebooking' book.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
+				  <!-- <a style="color: red;" href="{% url 'deletebooking' book.id %}"><i class="fa-solid fa-delete-left"></i></a> -->
+				</td>
+			  </tr>
+			{% endfor %}  
+		  </tbody>
+		</table>
+	</div>
+</div>
+{% endblock %}
+
+
