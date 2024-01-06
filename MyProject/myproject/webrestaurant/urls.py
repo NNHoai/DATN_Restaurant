@@ -57,5 +57,17 @@ urlpatterns = [
 
     path('monthstatistics/', views.monthstatistics, name="monthstatistics"),
     path('daystatistics/', views.daystatistics, name="daystatistics"),
+    
+    path('statistics_date/', views.statistics_date, name="statistics_date"),
+    path('statistics_year/', views.statistics_year, name="statistics_year"),
+
     path('bill/<int:pk>/', views.bill, name="bill"),
+
+    path('pay', views.index, name='index'),
+    path('payment', views.payment, name='payment'),
+    path('payment_ipn', views.payment_ipn, name='payment_ipn'),
+    path('payment_return', views.payment_return, name='payment_return'),
+    path('query', views.query, name='query'),
+    path('refund', views.refund, name='refund'),
+
 ]

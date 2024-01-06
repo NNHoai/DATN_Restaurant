@@ -27,7 +27,7 @@
                                 {% endfor %}
                               {% endif %}
         </div>
-        <div><span>Nhân viên</span> Hoàng Nam</div>
+        <div><span>Nhân viên</span> {{bill.account.name}}</div>
         <div><span>Giờ vào</span> {{bill.date_created |date:'Y-m-d H:i' }}</div>
         <div><span>Giờ ra</span> {{bill.date_checkout |slice:":16" }}</div>
       </div>

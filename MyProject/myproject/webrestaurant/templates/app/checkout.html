@@ -3,8 +3,8 @@
 {% block content_checkout %}
      <div class="row" style="min-height: 600px;">
 		<div class="col-lg-6">
-			<div class="box-element" id="form-wrapper">
-				<form id="form" method="POST" action="">
+			<div class="box-element" id="form-wrapper" style="background: antiquewhite;">
+				<form id="form-checkout" method="POST" action="">
 					{% csrf_token %}
 					<div id="user-info">
 						<div class="form-field">
@@ -26,24 +26,25 @@
 							{{form.email}}
 						</div>
 						<div class="form-field">
-							<div class="" style="display:flex; flex-direction: row;">
+							<div class="" style="display:flex; flex-direction: row; gap: 1rem;">
 								<input class="form-control" style="width: 35%;" type="number" name="numpeople" placeholder="Số người.." min="1" max="1000" required>
 								<input class="form-control" style="width: 65%;" type="datetime-local" name="dateobooking" placeholder="Ngày giờ..">
 							</div>
 						</div>
 						<textarea class="form-control" rows="4" name="description" placeholder="Yêu cầu thêm.." ></textarea>	
 					</div>
-
+					<hr>
+					<div class="form-field" id="payment-info" style="display: flex; width: 80%; gap: 1rem;">
+						<p>Phương thức thanh toán</p>
+						<select class="form-control" name="payment_method" id="payment_method" style="width: 50%; appearance: auto;">
+							<option value="COD">Thanh toán tại nhà hàng</option>
+							<option value="PAYONLINE">Thanh toán online</option>
+						</select>
+					</div>
 					<hr>
 					<input id="form-button" class="btn btn-success btn-block" style="display: block; margin: auto;"type="submit" value="Đặt bàn">
 				</form>
 			</div>
-
-			<br>
-			<div class="box-element hidden" id="payment-info">
-				<small>Paypal Options</small>
-			</div>
-			
 		</div>
 
 		<div class="col-lg-6">
@@ -55,8 +56,9 @@
 				<div class="cart-row">
 					<div style="flex:1"></div>
 					<div class="cart-table" style="flex:2"><strong>Món</strong></div>
-					<div class="cart-table" style="flex:1"><strong>Giá</strong></div>
+					<div class="cart-table" style="flex:1"><strong>Đơn giá</strong></div>
 					<div class="cart-table" style="flex:1"><strong>Số lượng</strong></div>
+					<div class="cart-table" style="flex:1"><strong>Tổng giá</strong></div>
 				</div>
 				{% for item in items %}
 				<div class="cart-row">
@@ -64,6 +66,7 @@
 					<div class="cart-table" style="flex:2"><p>{{item.product.name}}</p></div>
 					<div class="cart-table" style="flex:1"><p>{{item.product.price|floatformat:0}} đ</p></div>
 					<div class="cart-table" style="flex:1"><p>{{item.quantity}}</p></div>
+					<div class="cart-table" style="flex:1"><p>{{item.get_total|floatformat:0}} đ</p></div>
 				</div>
 				{% endfor %}
 				<h5>Số lượng: {{order.get_cart_items}}</h5>
@@ -71,4 +74,19 @@
 			</div>
 		</div>
 	</div>
+<Script>
+	pay_select = document.getElementById('payment_method')
+    
+	form_checkout = document.getElementById('form-checkout')
+	
+	pay_select.addEventListener('change', function (){
+		if(this.value == "COD"){
+			form_checkout.action = '{% url "checkout" %}';
+		}
+		else if(this.value == "PAYONLINE"){
+			form_checkout.action = '{% url "payment" %}';
+		};
+		
+	});
+</Script>
 {% endblock content_checkout %}

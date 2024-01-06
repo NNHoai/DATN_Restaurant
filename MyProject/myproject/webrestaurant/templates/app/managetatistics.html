@@ -7,10 +7,38 @@
     <canvas id="myChart" style="max-width: 70%; height: 500px;"></canvas>
     <div class="right_chart" style="max-width: 30%; float: right">
       <canvas id="myChart1"style="height: 185px; width: 340px;"></canvas>
-      <div class="text_price" style="padding-left: 1rem;">
+      <div class="text_price" style="padding-left: 3rem;">
         <h4>{{text_max}}</h4>
         <h4>{{text_min}}</h4>
       </div>
+      <div class="input-date" style="background:antiquewhite; text-align:center; padding: 1rem;">
+        
+        {%if check == 'day'%}
+        <form action="{% url 'statistics_date' %}" method="post">
+          {% csrf_token %}  
+          <div class="date-field" style="display: flex; margin: 1rem;">
+            <p style="margin: auto 1rem; font-weight: 500;">Từ ngày:</p>
+            <input type="date" name="daystart" id="daystart" value="{{label_data|first}}" style="margin-left: 10px; padding-left: 5px; border-radius: 5px;">
+          </div>
+          <div class="date-field" style="display: flex; margin: 1rem;">
+            <p style="margin: auto 1rem; font-weight: 500;">Đến ngày:</p>
+            <input type="date" name="dayend" id="dayend" value="{{label_data|last}}" style="padding-left: 5px; border-radius: 5px;">
+          </div>
+          <button class="btn-statistic" id="btn_date" style="background: #153f53; font-size: 1.25rem; color: white;">Thống kê</button>
+        </form>
+        {% else %}
+        <form action="{% url 'statistics_year' %}" method="post">
+        {% csrf_token %}
+          <div class="year-field" style="display: flex; margin: 1rem;">
+            <p style="margin: auto 1rem; font-weight: 500;">Năm:</p>
+            <input type="number" name="year" id="year" min={{yearmin|slugify}} max={{yearmax|slugify}} step="1" value={{yearnow|slugify}} style="padding-left: 5px; border-radius: 5px;">
+            <button class="btn-statistic" id="btn_year" style="background: #153f53; font-size: 1.25rem; color: white; margin-left: 10px; ">Thống kê</button>
+          </div>
+        </form>
+        {% endif %}
+
+      </div>
+      
     </div>
     
   </div>
@@ -28,25 +56,39 @@
   var data = [{% for price in data %} {{ price|stringformat:"s" }},{%endfor%}] ;
   var data1 = [{% for price in data1 %} {{ price|stringformat:"s" }},{%endfor%}] ;
   var labels = [{% for label in label_data %} '{{label|stringformat:"s" }}',{%endfor%}]
+
+  backgroundColor = []
+
+  var dynamicColors = function() {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return "rgba(" + r + "," + g + "," + b + ", 2)";
+  };
+  for (let i = 0; i < data.length; i++) {
+    backgroundColor.push(dynamicColors())
+  }
+
   var data_chart = {
       labels: labels,
       datasets: [{
           label: "Doanh thu theo VNĐ",
           data: data,
-          backgroundColor: [
-            "rgba(255, 99, 132, 2)",
-            "rgba(54, 162, 235, 2)",
-            "rgba(255, 206, 86, 2)",
-            "rgba(75, 192, 192, 2)",
-            "rgba(153, 102, 255, 2)",
-            "rgba(255, 159, 64, 2)",
-            "rgba(210, 110, 153, 2)",
-            "rgba(57, 162, 110, 2)",
-            "rgba(230, 110, 86, 2)",
-            "rgba(70, 192, 110, 2)",
-            "rgba(253, 110, 153, 2)",
-            "rgba(123, 153, 110, 2)",
-          ],
+          backgroundColor: backgroundColor
+          // [
+          //   "rgba(255, 99, 132, 2)",
+          //   "rgba(54, 162, 235, 2)",
+          //   "rgba(255, 206, 86, 2)",
+          //   "rgba(75, 192, 192, 2)",
+          //   "rgba(153, 102, 255, 2)",
+          //   "rgba(255, 159, 64, 2)",
+          //   "rgba(210, 110, 153, 2)",
+          //   "rgba(57, 162, 110, 2)",
+          //   "rgba(230, 110, 86, 2)",
+          //   "rgba(70, 192, 110, 2)",
+          //   "rgba(253, 110, 153, 2)",
+          //   "rgba(123, 153, 110, 2)",
+          // ],
           // borderColor: [
           //   "rgba(255,99,132,1)",
           //   "rgba(54, 162, 235, 1)",
@@ -70,20 +112,7 @@
       datasets: [{
           label: "Doanh thu theo VNĐ",
           data: data1,
-          backgroundColor: [
-            "rgba(255, 99, 132, 2)",
-            "rgba(54, 162, 235, 2)",
-            "rgba(255, 206, 86, 2)",
-            "rgba(75, 192, 192, 2)",
-            "rgba(153, 102, 255, 2)",
-            "rgba(255, 159, 64, 2)",
-            "rgba(210, 110, 153, 2)",
-            "rgba(57, 162, 110, 2)",
-            "rgba(230, 110, 86, 2)",
-            "rgba(70, 192, 110, 2)",
-            "rgba(253, 110, 153, 2)",
-            "rgba(123, 153, 110, 2)",
-          ],
+          backgroundColor: backgroundColor
         },
       ],
     };
@@ -166,5 +195,6 @@
     data: data_chart1,
     options: options1,
   });
+
 </script>
 {% endblock %}

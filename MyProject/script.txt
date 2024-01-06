@@ -28,3 +28,4 @@ pip install mysqlclient
 
 pip install num2wwords
 
+pip install requests

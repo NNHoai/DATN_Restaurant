@@ -11,13 +11,14 @@
         	  <!-- <th scope="col" style="width: 12%">Tài khoản</th> -->
 			  <th scope="col" style="width: 12%">Tên</th>
 			  <th scope="col" style="width: 10%;">Số điên thoại</th>
-			  <th scope="col" style="width: 12%">Ngày tạo</th>
-			  <th scope="col" style="width: 12%">Ngày đặt bàn</th>
+			  <th scope="col" style="width: 10%">Ngày tạo</th>
+			  <th scope="col" style="width: 10%">Ngày đặt bàn</th>
 			  <th scope="col" style="width: 7%;">Số người</th>
 			  <th scope="col" style="width: 12%;">Yêu cầu</th>
 			  <th scope="col">Danh sách món</th>
 			  <th scope="col" style="width: 10%">Trạng thái</th>
-        <th scope="col" style="width: 5%"></th>
+			  <th scope="col" style="width: 10%">Phương thức thanh toán</th>
+        	  <th scope="col" style="width: 5%"></th>
 			</tr>
 		  </thead>
 		  <tbody>
@@ -42,7 +43,10 @@
 					{% endfor %}
 				</td>
 				<td>
-				{{book.status}}
+					{{book.status}}
+				</td>
+				<td>
+					{{book.paytype}}
 				</td>
 				<td>
 				  <a style="color: blue;" href="{% url 'updatebooking' book.id %}"><i class="fa-solid fa-pen-to-square"></i></a>

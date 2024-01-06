@@ -67,7 +67,7 @@ class OrderItem(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.id) 
     
     @property
     def get_total(self):
@@ -87,10 +87,18 @@ class InfoBooking(models.Model):
     class Status(models.TextChoices):
         COMPLETE = "COMPLETE", "Complete"
         WAIT = "WAIT", "Wait"
+        CONFIRMED = "CONFIRMED", "Confirmed"
         CANCEL = "CANCEL", "Cancel"
 
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.WAIT
+    )
+    class Pays(models.TextChoices):
+        COD = "COD", "Thanh toán tại nhà hàng"
+        PAYONLINE = "PAYONLINE", "Thanh toán online"
+    
+    paytype = models.CharField(
+        max_length=20, choices=Pays.choices, default=Pays.COD
     )
 
 class Table(models.Model):
