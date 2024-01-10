@@ -70,11 +70,72 @@ def loginstaff(request):
     context = { 'message' : message, 'title': "Đăng nhập"}
     return render(request, 'app/loginstaff.html', context)
 
+
+# # chart statistic year
+# @login_required(login_url='/loginstaff/')
+# def manage(request):
+#     bills = Bill.objects.all()
+#     data = []
+#     daynow = datetime.date.today()
+#     numbooking = 0
+#     bookingtoday = InfoBooking.objects.all()
+#     for i in bookingtoday:
+#         if i.date_booking.date() == daynow:
+#             numbooking += 1
+#     numstaff = len(Account.objects.filter(type='EMPLOYEE'))
+#     numcustomer = len(Account.objects.filter(type='CUSTOMER'))
+#     numproduct = len(Product.objects.all())
+   
+#     yearnow = datetime.datetime.now().year
+#     total_price_daynow = 0
+#     for i in range(1,13):
+#         total_price = 0
+#         for bill in bills:
+#             if(bill.date_created.year == yearnow and bill.date_created.month == i):
+#                 total_price += bill.total_price
+#             if(bill.date_created.date() == daynow):
+#                 total_price_daynow += bill.total_price
+#         data.append(int(total_price))
+#     total_price_year = sum(data)
+#     text_total = 'Tổng doanh thu từ đầu năm '+ str(yearnow) + ' đến hiện tại: '+ '{:,}'.format(total_price_year) +'đ'
+
+#     detailbills = DetailBill.objects.all()
+#     listdetail = []
+#     for i in range(len(detailbills)):
+#         checkcategory = Product.objects.get(id=detailbills[i].product_id).category_id
+#         if checkcategory != 1:
+#             checkproduct = False
+#             for tem in listdetail:
+#                 if detailbills[i].product == tem[0]:
+#                     checkproduct = True
+#             if not checkproduct:
+#                 val = detailbills[i].quantity
+#                 for j in range(i+1, len(detailbills)):
+#                     if detailbills[j].product_id == detailbills[i].product_id:
+#                         val += detailbills[j].quantity
+#                 listdetail.append((detailbills[i].product, val))
+#     toplist = sorted(listdetail, key=itemgetter(1), reverse=True)[:5]
+
+#     label_data = ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"]
+#     context = {'title': "Trang quản lý", 'numbooking': numbooking, 'numstaff': numstaff, 'numcustomer': numcustomer, 'numproduct': numproduct , 'label_data': label_data,'data': data, 'text_total': text_total, 'total_price_daynow': total_price_daynow,'toplist': toplist}
+#     return render(request,'app/manageDashboard.html',context)
+
+# chart statistic week
 @login_required(login_url='/loginstaff/')
 def manage(request):
     bills = Bill.objects.all()
     data = []
+    label_data = []
     daynow = datetime.date.today()
+    datestart = daynow - datetime.timedelta(days=7)
+    for i in range(8):
+        total_price = 0
+        datecheck = datestart + datetime.timedelta(days=i)
+        label_data.append(str(datecheck))
+        for bill in bills:
+            if(bill.date_created.date() == datecheck):
+                total_price += bill.total_price
+        data.append(int(total_price))
     numbooking = 0
     bookingtoday = InfoBooking.objects.all()
     for i in bookingtoday:
@@ -86,16 +147,12 @@ def manage(request):
    
     yearnow = datetime.datetime.now().year
     total_price_daynow = 0
-    for i in range(1,13):
-        total_price = 0
-        for bill in bills:
-            if(bill.date_created.year == yearnow and bill.date_created.month == i):
-                total_price += bill.total_price
+    for bill in bills:
             if(bill.date_created.date() == daynow):
                 total_price_daynow += bill.total_price
-        data.append(int(total_price))
-    total_price_year = sum(data)
-    text_total = 'Tổng doanh thu năm '+ str(yearnow) + ': '+ '{:,}'.format(total_price_year) +'đ'
+
+    total_price_week = sum(data)
+    text_total = 'Tổng doanh thu từ đầu năm '+ str(yearnow) + ' đến hiện tại: '+ '{:,}'.format(total_price_week) +'đ'
 
     detailbills = DetailBill.objects.all()
     listdetail = []
@@ -104,7 +161,7 @@ def manage(request):
         if checkcategory != 1:
             checkproduct = False
             for tem in listdetail:
-                if detailbills[i].product_id == tem[0]:
+                if detailbills[i].product == tem[0]:
                     checkproduct = True
             if not checkproduct:
                 val = detailbills[i].quantity
@@ -113,15 +170,10 @@ def manage(request):
                         val += detailbills[j].quantity
                 listdetail.append((detailbills[i].product, val))
     toplist = sorted(listdetail, key=itemgetter(1), reverse=True)[:5]
-    # topproducts = []
-    # numtop = {}
-    # for i in range(5):
-    #    topproducts.append(Product.objects.get(id=toplist[i][0]))
-    #    numtop[toplist[i][0]] = toplist[i][1]
-    print(toplist)
-    label_data = ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"]
+
     context = {'title': "Trang quản lý", 'numbooking': numbooking, 'numstaff': numstaff, 'numcustomer': numcustomer, 'numproduct': numproduct , 'label_data': label_data,'data': data, 'text_total': text_total, 'total_price_daynow': total_price_daynow,'toplist': toplist}
     return render(request,'app/manageDashboard.html',context)
+    
 
 @login_required(login_url='/loginstaff/')
 def staff(request):

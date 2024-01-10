@@ -42,7 +42,7 @@
     </div>
     
   </div>
-  <div class="total_price_year" style="padding: 1rem; background: #153f53; font-size: 2rem; color: aliceblue;">
+  <div class="total_price_year" style="padding: 1rem; background: #153f53; font-size: 2rem; color: aliceblue; margin-top: 1rem ">
     {{text_total}}
   </div>
 </div>
@@ -57,7 +57,7 @@
   var data1 = [{% for price in data1 %} {{ price|stringformat:"s" }},{%endfor%}] ;
   var labels = [{% for label in label_data %} '{{label|stringformat:"s" }}',{%endfor%}]
 
-  backgroundColor = []
+  pointColor = []
 
   var dynamicColors = function() {
     var r = Math.floor(Math.random() * 255);
@@ -66,7 +66,7 @@
     return "rgba(" + r + "," + g + "," + b + ", 2)";
   };
   for (let i = 0; i < data.length; i++) {
-    backgroundColor.push(dynamicColors())
+    pointColor.push(dynamicColors())
   }
 
   var data_chart = {
@@ -74,7 +74,7 @@
       datasets: [{
           label: "Doanh thu theo VNĐ",
           data: data,
-          backgroundColor: backgroundColor
+          backgroundColor: pointColor
           // [
           //   "rgba(255, 99, 132, 2)",
           //   "rgba(54, 162, 235, 2)",
@@ -112,7 +112,7 @@
       datasets: [{
           label: "Doanh thu theo VNĐ",
           data: data1,
-          backgroundColor: backgroundColor
+          backgroundColor: pointColor
         },
       ],
     };
@@ -190,17 +190,25 @@
   //   data: data_chart,
   //   options: options,
   // });
+  gradient = ctx.createLinearGradient(0, 0, 0, 450);
+
+  gradient.addColorStop(0, 'rgba(0, 0, 255, 0.5)');
+  gradient.addColorStop(0.5, 'rgba(0, 0, 255, 0.25)');
+  gradient.addColorStop(1, 'rgba(0, 0, 255, 0)');
+  
+  console.log(gradient);
   var myChart = new Chart(ctx,{
     type: 'line',
     data: {
       labels: labels,
       datasets: [{
-          fill: false,
-          lineTension: 0,
+          fill: true,
+          lineTension: 0.3,
           label: "Doanh thu theo VNĐ",
           data: data,
-          backgroundColor: "rgba(0,0,255,1.0)",
-          borderColor: "rgba(0,0,255,0.1)",
+          backgroundColor: gradient,
+          pointBackgroundColor: pointColor,
+          borderColor: "rgba(195, 0, 0, 1)",
         },
       ],
     },

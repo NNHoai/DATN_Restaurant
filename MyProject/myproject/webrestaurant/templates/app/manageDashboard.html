@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="sub_db">
-      <i class="fa-solid fa-users" style="background: #e96388;"></i>
+      <i class="fa-solid fa-users" style="background: #d0f54a;"></i>
       <div class="detail_sub">
         <h5>{{numcustomer}}</h5>
         <h6>Khách hàng</h6>
@@ -31,7 +31,7 @@
         <h6>Món</h6>
       </div>
     </div>
-    <div class="sub_db">
+    <div class="sub_db" style="margin-left: 6.2rem;">
       <i class="fa-solid fa-dollar-sign" style="background: #59bef2;"></i>
       <div class="detail_sub">
         <h5>{{total_price_daynow|floatformat:0}}đ</h5>
@@ -102,17 +102,25 @@
       },
       tooltips: tooltips,
     };
+  
+  gradient = ctx.createLinearGradient(0, 0, 0, 450);
+
+  gradient.addColorStop(0, 'rgba(255, 0,0, 0.5)');
+  gradient.addColorStop(0.5, 'rgba(255, 0, 0, 0.25)');
+  gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
   var myChart = new Chart(ctx,{
     type: 'line',
     data: {
       labels: labels,
-      datasets: [{
-          fill: false,
-          lineTension: 0,
+      datasets: [
+        {
+          fill: true,
+          lineTension: 0.3,
           label: "Doanh thu theo VNĐ",
           data: data,
-          backgroundColor: "rgba(9,10,255,1.0)",
-          borderColor: "rgba(0,0,255,0.5)",
+          backgroundColor: gradient,
+          pointBackgroundColor: 'white',
+          borderColor: "rgba(195, 0, 0, 1)",
         },
       ],
     },
