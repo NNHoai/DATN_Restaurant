@@ -1,0 +1,124 @@
+{% extends 'app/manage.html' %} 
+{% load static %} 
+{% block content %}
+<div class="manage_content" style="background: #f2f3f7; padding: 1rem;">
+  <div class="top-dashboard">
+    <div class="sub_db">
+      <i class="fa-regular fa-file-lines" style="background: #e96388;"></i>
+      <div class="detail_sub">
+        <h5>{{numbooking}}</h5>
+        <h6>Đặt bàn hôm nay</h6>
+      </div>
+    </div>
+    <div class="sub_db">
+      <i class="fa-solid fa-users" style="background: #e96388;"></i>
+      <div class="detail_sub">
+        <h5>{{numcustomer}}</h5>
+        <h6>Khách hàng</h6>
+      </div>
+    </div>
+    <div class="sub_db">
+      <i class="fa-solid fa-user-group" style="background: #5e59f5;"></i>
+      <div class="detail_sub">
+        <h5>{{numstaff}}</h5>
+        <h6>Nhân viên</h6>
+      </div>
+    </div>
+    <div class="sub_db">
+      <i class="fa-solid fa-list" style="background: #ff9259;"></i>
+      <div class="detail_sub">
+        <h5>{{numproduct}}</h5>
+        <h6>Món</h6>
+      </div>
+    </div>
+    <div class="sub_db">
+      <i class="fa-solid fa-dollar-sign" style="background: #59bef2;"></i>
+      <div class="detail_sub">
+        <h5>{{total_price_daynow|floatformat:0}}đ</h5>
+        <h6>Doanh thu ngày hôm nay</h6>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-dashboard">
+    <div class="left_detail_sub">
+      <h5>{{text_total}}</h5>
+      <hr>
+      <canvas id="myChart" style="max-width: 100%; height: 410px;"></canvas>
+    </div>
+    <div class="right_detail_sub">
+      <h5>Các món yêu thích</h5>
+      <hr>
+      
+      {% for product in toplist %}
+      <div class="sub_product">
+        <img class="row-image" src="{{product.0.image.url}}">
+        <div class="sub_product_detail">
+          <h6>{{product.0.name}}</h6>
+          <h6>Số lần gọi: {{product.1}}</h6>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<script>
+  var ctx = document.getElementById("myChart").getContext("2d");
+  var data = [{% for price in data %} {{ price|stringformat:"s" }},{%endfor%}] ;
+  var labels = [{% for label in label_data %} '{{label|stringformat:"s" }}',{%endfor%}]
+  var tooltips = {
+      callbacks: {
+                label: function(tooltipItem, data) {
+                  var dataLabel = data.labels[tooltipItem.index];
+                  var value = ': ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toLocaleString()+ 'đ';
+                  if (Chart.helpers.isArray(dataLabel)) {
+                    dataLabel = dataLabel.slice();
+                    dataLabel[0] += value;
+                  } else {
+                    dataLabel += value;
+                  }
+                  return dataLabel;
+                }
+            }
+      }
+  var options = {
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+              // scaleLabel: function(label) {
+              //   return value.toLocaleString("vi",{style:"currency", currency:"VND"});},
+              userCallback: function(value, index, values) {
+                // Convert the number to a string and splite the string every 3 charaters from the end
+                value = value.toString();
+                value = value.split(/(?=(?:...)*$)/);
+                // Convert the array to a string and format the output
+                value = value.join('.');
+                return value +'đ';
+               }
+            },
+          },
+        ],
+      },
+      tooltips: tooltips,
+    };
+  var myChart = new Chart(ctx,{
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+          fill: false,
+          lineTension: 0,
+          label: "Doanh thu theo VNĐ",
+          data: data,
+          backgroundColor: "rgba(9,10,255,1.0)",
+          borderColor: "rgba(0,0,255,0.5)",
+        },
+      ],
+    },
+    options: options,
+  }); 
+</script>
+{% endblock %}
+
+

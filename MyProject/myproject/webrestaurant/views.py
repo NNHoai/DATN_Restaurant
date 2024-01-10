@@ -72,14 +72,56 @@ def loginstaff(request):
 
 @login_required(login_url='/loginstaff/')
 def manage(request):
-    message = ''
-    if request.user.is_authenticated and request.method == "GET":
-        n = 0
-        categories = Category.objects.all()
-        products = Product.objects.all()
-        context = {'n': n, 'categories': categories, 'products': products, 'title': "Quản lý thực đơn"}
-        return render(request,'app/managecategory.html',context)
-            
+    bills = Bill.objects.all()
+    data = []
+    daynow = datetime.date.today()
+    numbooking = 0
+    bookingtoday = InfoBooking.objects.all()
+    for i in bookingtoday:
+        if i.date_booking.date() == daynow:
+            numbooking += 1
+    numstaff = len(Account.objects.filter(type='EMPLOYEE'))
+    numcustomer = len(Account.objects.filter(type='CUSTOMER'))
+    numproduct = len(Product.objects.all())
+   
+    yearnow = datetime.datetime.now().year
+    total_price_daynow = 0
+    for i in range(1,13):
+        total_price = 0
+        for bill in bills:
+            if(bill.date_created.year == yearnow and bill.date_created.month == i):
+                total_price += bill.total_price
+            if(bill.date_created.date() == daynow):
+                total_price_daynow += bill.total_price
+        data.append(int(total_price))
+    total_price_year = sum(data)
+    text_total = 'Tổng doanh thu năm '+ str(yearnow) + ': '+ '{:,}'.format(total_price_year) +'đ'
+
+    detailbills = DetailBill.objects.all()
+    listdetail = []
+    for i in range(len(detailbills)):
+        checkcategory = Product.objects.get(id=detailbills[i].product_id).category_id
+        if checkcategory != 1:
+            checkproduct = False
+            for tem in listdetail:
+                if detailbills[i].product_id == tem[0]:
+                    checkproduct = True
+            if not checkproduct:
+                val = detailbills[i].quantity
+                for j in range(i+1, len(detailbills)):
+                    if detailbills[j].product_id == detailbills[i].product_id:
+                        val += detailbills[j].quantity
+                listdetail.append((detailbills[i].product, val))
+    toplist = sorted(listdetail, key=itemgetter(1), reverse=True)[:5]
+    # topproducts = []
+    # numtop = {}
+    # for i in range(5):
+    #    topproducts.append(Product.objects.get(id=toplist[i][0]))
+    #    numtop[toplist[i][0]] = toplist[i][1]
+    print(toplist)
+    label_data = ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"]
+    context = {'title': "Trang quản lý", 'numbooking': numbooking, 'numstaff': numstaff, 'numcustomer': numcustomer, 'numproduct': numproduct , 'label_data': label_data,'data': data, 'text_total': text_total, 'total_price_daynow': total_price_daynow,'toplist': toplist}
+    return render(request,'app/manageDashboard.html',context)
 
 @login_required(login_url='/loginstaff/')
 def staff(request):
@@ -601,6 +643,17 @@ def deleteproduct(request, pk):
     product.delete()
     return redirect('manageproduct')
 
+    
+@login_required(login_url='/loginstaff/')
+def managecategory(request):
+    message = ''
+    if request.user.is_authenticated and request.method == "GET":
+        n = 0
+        categories = Category.objects.all()
+        products = Product.objects.all()
+        context = {'n': n, 'categories': categories, 'products': products, 'title': "Quản lý thực đơn"}
+        return render(request,'app/managecategory.html',context)
+
 @login_required(login_url='/loginstaff/')
 def addcategory(request):
     form = CategoryForm()
@@ -764,6 +817,7 @@ def updatestaff(request, pk):
         staff.phone = form['phone'].value()
         staff.email = form['email'].value()
         staff.address = form['address'].value()
+        staff.type = form['type'].value()
         staff.save()
 
         return redirect('managestaff')
@@ -913,7 +967,6 @@ def statistics_date(request):
 
 @login_required(login_url='/loginstaff/')
 def monthstatistics(request):
-    # print(datetime.date.today() + datetime.timedelta(days=1))
     bills = Bill.objects.all()
     data = []
     data1 = []
@@ -936,7 +989,6 @@ def monthstatistics(request):
             year.append(yearbill)
     yearmax = max(year)
     yearmin = min(year)
-    print(str(yearmax)+" "+str(yearmin))
     
     label_data = ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"]
     total_price_max = max(data)
@@ -1012,7 +1064,7 @@ def payment(request):
             order.save()
 
             order_type = "billpayment"
-            order_id = datetime.datetime.now().strftime("%Y%m%d%H%M%S")+"-" + str(order.id)
+            booking_id = datetime.datetime.now().strftime("%Y%m%d%H%M%S")+"-" + str(infobooking.id)
             amount = math.trunc(order.get_cart_total)
             order_desc = "Thanh toan dat ban ngay " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             bank_code = ""
@@ -1026,7 +1078,7 @@ def payment(request):
             vnp.requestData['vnp_TmnCode'] = settings.VNPAY_TMN_CODE
             vnp.requestData['vnp_Amount'] = amount * 100
             vnp.requestData['vnp_CurrCode'] = 'VND'
-            vnp.requestData['vnp_TxnRef'] = order_id
+            vnp.requestData['vnp_TxnRef'] = booking_id
             vnp.requestData['vnp_OrderInfo'] = order_desc
             vnp.requestData['vnp_OrderType'] = order_type
             # Check language, default: vn
@@ -1094,60 +1146,59 @@ def payment_return(request):
     if inputData:
         vnp = vnpay()
         vnp.responseData = inputData.dict()
-        order_id = inputData['vnp_TxnRef'][15:]
+        booking_id = inputData['vnp_TxnRef'][15:]
         amount = int(inputData['vnp_Amount']) / 100
         order_desc = inputData['vnp_OrderInfo']
         vnp_TransactionNo = inputData['vnp_TransactionNo']
         vnp_ResponseCode = inputData['vnp_ResponseCode']
 
-        account = request.user.account
         categories = Category.objects.filter(active=True)
         if vnp.validate_response(settings.VNPAY_HASH_SECRET_KEY):
             if vnp_ResponseCode == "00":
                 order = {'get_cart_items' : 0, 'get_cart_total' : 0}
                 return render(request, "payment/payment_return.html", {"title": "Kết quả thanh toán",
                                                                     "categories": categories, "order": order, 
-                                                                    "result": "Thành công", "order_id": order_id,
+                                                                    "result": "Thành công", "booking_id": booking_id,
                                                                     "amount": amount,
                                                                     "order_desc": order_desc,
                                                                     "vnp_TransactionNo": vnp_TransactionNo,
                                                                     "vnp_ResponseCode": vnp_ResponseCode})
             else:
-                order = Order.objects.get(id=order_id)
+                infoBooking = InfoBooking.objects.get(id=booking_id)
+                order = infoBooking.order
                 order.complete = False
                 order.save()
 
-                infoBooking = InfoBooking.objects.get(order=order)
                 infoBooking.delete()
 
                 return render(request, "payment/payment_return.html", {"title": "Kết quả thanh toán",
                                                                     "categories": categories, "order": order,        
-                                                                    "result": "Lỗi", "order_id": order_id,
+                                                                    "result": "Lỗi", "booking_id": booking_id,
                                                                     "amount": amount,
                                                                     "order_desc": order_desc,
                                                                     "vnp_TransactionNo": vnp_TransactionNo,
                                                                     "vnp_ResponseCode": vnp_ResponseCode})
         else:
-            order = Order.objects.get(id=order_id)
+            infoBooking = InfoBooking.objects.get(id=booking_id)
+            order = infoBooking.order
             order.complete = False
             order.save()
 
-            infoBooking = InfoBooking.objects.get(order=order)
             infoBooking.delete()
             return render(request, "payment/payment_return.html",
                           {"title": "Kết quả thanh toán",
                            "categories": categories, "order": order,  
-                           "result": "Lỗi", "order_id": order_id, 
+                           "result": "Lỗi", "booking_id": booking_id, 
                            "amount": amount, "order_desc": order_desc, 
                            "vnp_TransactionNo": vnp_TransactionNo,
                            "vnp_ResponseCode": vnp_ResponseCode, 
                            "msg": "Sai checksum"})
     else:
-        order = Order.objects.get(id=order_id)
+        infoBooking = InfoBooking.objects.get(id=booking_id)
+        order = infoBooking.order
         order.complete = False
         order.save()
 
-        infoBooking = InfoBooking.objects.get(order=order)
         infoBooking.delete()
 
         return render(request, "payment_return.html", {"title": "Kết quả thanh toán", "categories": categories, "order": order,  "result": ""})

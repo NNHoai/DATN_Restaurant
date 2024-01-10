@@ -299,6 +299,66 @@ h6 {
   width: 85%;
   overflow: auto;
 }
+.manage_content .top-dashboard{
+  height: 15%;
+  display: flex;
+  gap: 1.3rem; 
+}
+.top-dashboard .sub_db{
+  background: #fff;
+  display: flex;
+  flex-direction: row;
+  padding: 1rem;
+  border-radius: 4px;
+}
+.sub_db i{
+  /* width: 50px; */
+  text-align: center;
+  font-size: 2rem;
+  margin: auto;
+  margin-right: 0.5rem;
+  padding: 10px;
+  color: white;
+  border-radius: 3px;
+}
+.sub_db .detail_sub{
+  display: flex;
+  flex-direction: column;
+}
+.manage_content .bottom-dashboard{
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 1.3rem;
+}
+.bottom-dashboard .left_detail_sub{
+  background: white;
+  width: 68%;
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+.left_detail_sub h5{
+  text-align: center;
+}
+.bottom-dashboard .right_detail_sub{
+  background: white;
+  width: 30%;
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+.right_detail_sub h5{
+  text-align: center;
+}
+.right_detail_sub .sub_product{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  padding: 0.5rem;
+}
+.sub_product .sub_product_detail{
+  display: flex;
+  flex-direction: column;
+}
 .manage_content table{
 	border-collapse: collapse; 
 	table-layout: fixed; 
@@ -660,12 +720,12 @@ table td{
   width: 100%;
 }
 .name_product {
-  width: 50%;
+  width: 65%;
 }
 .price {
   text-align: right;
   float: right;
-  width: 50%;
+  width: 35%;
 }
 .cart-row {
   display: flex;
@@ -704,6 +764,28 @@ table td{
 .hidden {
   display: none !important;
 }
+
+.panel-default{
+  background: aliceblue;
+  display: flex;
+  flex-direction: column;
+  padding: initial;
+  text-align: center;
+  height: 350px;
+}
+.panel-default .panel-heading{
+  font-size: 2rem;
+  font-weight: bold;
+  padding: 1rem;
+}
+.panel-default .panel-body{
+  width: fit-content;
+  text-align: left;
+  margin: 0 auto;
+  font-size: 1rem;
+
+}
+
 /* -----------footer------------- */
 .footer {
   margin: 15px 15px 15px 15px;

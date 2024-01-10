@@ -25,8 +25,9 @@ urlpatterns = [
     path('update_table_bill/', views.updatetablebill, name="updatetablebill"),
     # path('checkout_table/', views.checkouttable, name="checkout_table"),
     
-    # path('managecategory/', views.managecategory, name="managecategory"),
+    
     path('manage/', views.manage, name="manage"),   
+    path('managecategory/', views.managecategory, name="managecategory"),
     path('addcategory/', views.addcategory, name="addcategory"),
     path('updatecategory/<int:pk>/', views.updatecategory, name="updatecategory"),
     path('deletecategory/<int:pk>/', views.deletecategory, name="deletecategory"),

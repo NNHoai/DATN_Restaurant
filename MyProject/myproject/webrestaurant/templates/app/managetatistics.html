@@ -184,12 +184,29 @@
               text: 'Doanh thu theo %'
           },
         };
-
+  
+  // var myChart5 = new Chart(ctx,{
+  //   type: 'bar',
+  //   data: data_chart,
+  //   options: options,
+  // });
   var myChart = new Chart(ctx,{
-    type: 'bar',
-    data: data_chart,
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+          fill: false,
+          lineTension: 0,
+          label: "Doanh thu theo VNĐ",
+          data: data,
+          backgroundColor: "rgba(0,0,255,1.0)",
+          borderColor: "rgba(0,0,255,0.1)",
+        },
+      ],
+    },
     options: options,
-  });
+  }); 
+  
   var myChart1 = new Chart(ctx1,{
     type: 'pie',
     data: data_chart1,
