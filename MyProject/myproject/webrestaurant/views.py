@@ -713,7 +713,7 @@ def addcategory(request):
         form = CategoryForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('manage')
+            return redirect('managecategory')
     context = {"form": form, 'title': "Thêm thực đơn"}
     return render(request, 'app/addcategory.html', context)
 
@@ -727,7 +727,7 @@ def updatecategory(request, pk):
         form = CategoryForm(request.POST, instance=category)
         if form.is_valid():
             form.save()
-            return redirect('manage')
+            return redirect('managecategory')
         
     context = {"form": form, 'title': "Cập nhật thực đơn"}
     return render(request, 'app/updatecategory.html', context)
@@ -736,7 +736,7 @@ def updatecategory(request, pk):
 def deletecategory(request, pk):
     category = Category.objects.get(id=pk)
     category.delete()
-    return redirect('manage')
+    return redirect('managecategory')
 
 
 @login_required(login_url='/loginstaff/')

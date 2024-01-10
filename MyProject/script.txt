@@ -26,6 +26,8 @@ pip install pillow
 
 pip install mysqlclient
 
-pip install num2wwords
+pip install num2words
 
 pip install requests
+
+https://www.canva.com/design/DAFE38n10xs/sbMDAWiykl-uMQWfSho6TQ/edit
